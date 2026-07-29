@@ -35,6 +35,10 @@ export function useDailyFocus(initialItems: FocusItem[] = []) {
     setItems((currentItems) => currentItems.filter((item) => item.id !== id));
   }, []);
 
+  const reset = useCallback(() => {
+    setItems([]);
+  }, []);
+
   const completedCount = useMemo(
     () => items.filter((item) => item.completed).length,
     [items],
@@ -47,6 +51,7 @@ export function useDailyFocus(initialItems: FocusItem[] = []) {
     addItem,
     toggleCompletion,
     removeItem,
+    reset,
     completedCount,
     maxItems: MAX_ITEMS,
     canAddItem,

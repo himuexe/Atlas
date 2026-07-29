@@ -11,3 +11,4 @@ This document will track notable project updates and releases.
 - Health Snapshot feature added with shared health state and editable metrics.
 - Journal feature added with reflection entries, search, and dashboard summary.
 - Streak Counter feature added with habit streaks, today tracking, and dashboard summary.
+- Settings page added with startup page preference and app data reset controls.

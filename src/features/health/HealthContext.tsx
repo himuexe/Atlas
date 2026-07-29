@@ -5,6 +5,7 @@ import { useHealthSnapshot } from './useHealthSnapshot';
 interface HealthContextValue {
   health: HealthSnapshot;
   updateMetric: (metric: keyof HealthSnapshot, value: number | null) => void;
+  reset: () => void;
   filledMetricsCount: number;
   lastUpdated: string;
 }

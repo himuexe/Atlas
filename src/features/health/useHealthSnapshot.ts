@@ -29,6 +29,11 @@ export function useHealthSnapshot() {
     setLastUpdated(formatTimestamp(new Date()));
   }, []);
 
+  const reset = useCallback(() => {
+    setHealth(initialHealthState);
+    setLastUpdated('No updates yet');
+  }, []);
+
   const filledMetricsCount = useMemo(
     () => Object.values(health).filter((value) => value !== null).length,
     [health],
@@ -37,6 +42,7 @@ export function useHealthSnapshot() {
   return {
     health,
     updateMetric,
+    reset,
     filledMetricsCount,
     lastUpdated,
   };

@@ -9,32 +9,43 @@ import { StreaksPage } from './pages/StreaksPage';
 import { FocusProvider } from './features/focus/FocusContext';
 import { HealthProvider } from './features/health/HealthContext';
 import { JournalProvider } from './features/journal/JournalContext';
+import { SettingsProvider, useSettingsContext } from './features/settings/SettingsContext';
 import { StreakProvider } from './features/streaks/StreakContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <FocusProvider>
-        <HealthProvider>
-          <JournalProvider>
-            <StreakProvider>
-              <AppShell>
-                <Routes>
-                  <Route path="/" element={<Navigate replace to="/dashboard" />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/focus" element={<FocusPage />} />
-                  <Route path="/health" element={<HealthPage />} />
-                  <Route path="/journal" element={<JournalPage />} />
-                  <Route path="/streaks" element={<StreaksPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="*" element={<Navigate replace to="/dashboard" />} />
-                </Routes>
-              </AppShell>
-            </StreakProvider>
-          </JournalProvider>
-        </HealthProvider>
-      </FocusProvider>
+      <SettingsProvider>
+        <FocusProvider>
+          <HealthProvider>
+            <JournalProvider>
+              <StreakProvider>
+                <AppShell>
+                  <AppRoutes />
+                </AppShell>
+              </StreakProvider>
+            </JournalProvider>
+          </HealthProvider>
+        </FocusProvider>
+      </SettingsProvider>
     </BrowserRouter>
+  );
+}
+
+function AppRoutes() {
+  const { startupPage } = useSettingsContext();
+
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate replace to={startupPage} />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/focus" element={<FocusPage />} />
+      <Route path="/health" element={<HealthPage />} />
+      <Route path="/journal" element={<JournalPage />} />
+      <Route path="/streaks" element={<StreaksPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="*" element={<Navigate replace to={startupPage} />} />
+    </Routes>
   );
 }
 

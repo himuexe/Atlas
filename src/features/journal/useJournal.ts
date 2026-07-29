@@ -27,6 +27,11 @@ export function useJournal(initialEntries: JournalEntry[] = []) {
     setEntries((current) => current.filter((entry) => entry.id !== id));
   }, []);
 
+  const reset = useCallback(() => {
+    setEntries([]);
+    setQuery('');
+  }, []);
+
   const filteredEntries = useMemo(
     () => entries.filter((entry) => entry.content.toLowerCase().includes(query.toLowerCase())),
     [entries, query],
@@ -42,5 +47,6 @@ export function useJournal(initialEntries: JournalEntry[] = []) {
     setQuery,
     addEntry,
     removeEntry,
+    reset,
   };
 }

@@ -7,6 +7,7 @@ interface StreakContextValue {
   addHabit: (name: string) => void;
   removeHabit: (id: string) => void;
   toggleToday: (id: string) => void;
+  reset: () => void;
   totalHabits: number;
   completedToday: number;
   bestStreak: number;

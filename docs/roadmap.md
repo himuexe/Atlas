@@ -154,20 +154,20 @@ Clarity is.
 
 ✅ Project Initialization
 
-⬜ Architecture
+✅ Architecture
 
-⬜ Dashboard
+✅ Dashboard
 
-⬜ Focus Module
+✅ Focus Module
 
-⬜ Health Module
+✅ Health Module
 
-⬜ Journal
+✅ Journal
 
-⬜ Streaks
+✅ Streaks
 
-⬜ Settings
+✅ Settings
 
 ⬜ Local Storage
 
-⬜ V1 Release
+✅ V1 Release

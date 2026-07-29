@@ -7,6 +7,7 @@ interface FocusContextValue {
   addItem: (title: string) => void;
   toggleCompletion: (id: string) => void;
   removeItem: (id: string) => void;
+  reset: () => void;
   completedCount: number;
   maxItems: number;
   canAddItem: boolean;

@@ -103,6 +103,10 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
     );
   }, []);
 
+  const reset = useCallback(() => {
+    setHabits([]);
+  }, []);
+
   const summary = useMemo(() => {
     const total = habits.length;
     const doneToday = habits.filter((habit) => habit.history.includes(todayKey())).length;
@@ -127,6 +131,7 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
     addHabit,
     removeHabit,
     toggleToday,
+    reset,
     totalHabits: summary.total,
     completedToday: summary.doneToday,
     bestStreak: summary.bestStreak,
