@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { DashboardCard } from '../../components/ui/DashboardCard';
 import { SectionCard } from '../../components/ui/SectionCard';
 import { useFocus } from '../focus/FocusContext';
+import { useHealth } from '../health/HealthContext';
 
 const healthCards = [
   { title: 'Sleep', description: 'Rest and recovery are the foundation of a calm day.' },
@@ -11,6 +12,7 @@ const healthCards = [
 
 export function DashboardOverview() {
   const { items, completedCount } = useFocus();
+  const { health } = useHealth();
 
   const focusSummary = useMemo(() => {
     if (items.length === 0) {
@@ -20,6 +22,14 @@ export function DashboardOverview() {
     const nextItem = items.find((item) => !item.completed);
     return nextItem ? `Next: ${nextItem.title}` : 'All focus items are complete for today.';
   }, [items]);
+
+  const healthSummary = useMemo(() => {
+    const recorded = Object.entries(health)
+      .filter(([, value]) => value !== null)
+      .map(([key, value]) => `${key}: ${value}`);
+
+    return recorded.length > 0 ? recorded.join(', ') : 'No health metrics recorded yet.';
+  }, [health]);
 
   return (
     <div className="space-y-6">
@@ -45,7 +55,7 @@ export function DashboardOverview() {
             />
             <DashboardCard
               title="Health Snapshot"
-              description="Open your health summary to review weight, water, and recovery." 
+                description={healthSummary}
               to="/health"
               actionLabel="Open"
             />
