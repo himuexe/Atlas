@@ -9,3 +9,4 @@ This document will track notable project updates and releases.
 - Today’s Focus feature added with task creation, completion, and progress tracking.
 - Dashboard now uses shared focus state and links to feature pages.
 - Health Snapshot feature added with shared health state and editable metrics.
+- Journal feature added with reflection entries, search, and dashboard summary.

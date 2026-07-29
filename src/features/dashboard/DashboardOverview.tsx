@@ -3,6 +3,7 @@ import { DashboardCard } from '../../components/ui/DashboardCard';
 import { SectionCard } from '../../components/ui/SectionCard';
 import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
+import { useJournalContext } from '../journal/JournalContext';
 
 const healthCards = [
   { title: 'Sleep', description: 'Rest and recovery are the foundation of a calm day.' },
@@ -30,6 +31,16 @@ export function DashboardOverview() {
 
     return recorded.length > 0 ? recorded.join(', ') : 'No health metrics recorded yet.';
   }, [health]);
+
+  const { latestEntry, entries } = useJournalContext();
+
+  const journalSummary = useMemo(() => {
+    if (!entries.length) {
+      return 'No journal entries yet.';
+    }
+
+    return latestEntry ? `${new Date(latestEntry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - ${latestEntry.content.slice(0, 50)}` : 'Review your recent entry.';
+  }, [entries.length, latestEntry]);
 
   return (
     <div className="space-y-6">
@@ -64,7 +75,7 @@ export function DashboardOverview() {
           <div className="grid gap-6 lg:grid-cols-2">
             <DashboardCard
               title="Journal"
-              description="Capture a quick reflection or review your recent thoughts."
+                description={journalSummary}
               to="/journal"
               actionLabel="Write"
             />
