@@ -10,3 +10,4 @@ This document will track notable project updates and releases.
 - Dashboard now uses shared focus state and links to feature pages.
 - Health Snapshot feature added with shared health state and editable metrics.
 - Journal feature added with reflection entries, search, and dashboard summary.
+- Streak Counter feature added with habit streaks, today tracking, and dashboard summary.

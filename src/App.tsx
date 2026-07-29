@@ -9,6 +9,7 @@ import { StreaksPage } from './pages/StreaksPage';
 import { FocusProvider } from './features/focus/FocusContext';
 import { HealthProvider } from './features/health/HealthContext';
 import { JournalProvider } from './features/journal/JournalContext';
+import { StreakProvider } from './features/streaks/StreakContext';
 
 function App() {
   return (
@@ -16,18 +17,20 @@ function App() {
       <FocusProvider>
         <HealthProvider>
           <JournalProvider>
-            <AppShell>
-              <Routes>
-                <Route path="/" element={<Navigate replace to="/dashboard" />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/focus" element={<FocusPage />} />
-                <Route path="/health" element={<HealthPage />} />
-                <Route path="/journal" element={<JournalPage />} />
-                <Route path="/streaks" element={<StreaksPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="*" element={<Navigate replace to="/dashboard" />} />
-              </Routes>
-            </AppShell>
+            <StreakProvider>
+              <AppShell>
+                <Routes>
+                  <Route path="/" element={<Navigate replace to="/dashboard" />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/focus" element={<FocusPage />} />
+                  <Route path="/health" element={<HealthPage />} />
+                  <Route path="/journal" element={<JournalPage />} />
+                  <Route path="/streaks" element={<StreaksPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="*" element={<Navigate replace to="/dashboard" />} />
+                </Routes>
+              </AppShell>
+            </StreakProvider>
           </JournalProvider>
         </HealthProvider>
       </FocusProvider>

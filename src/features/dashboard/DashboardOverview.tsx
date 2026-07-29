@@ -4,6 +4,7 @@ import { SectionCard } from '../../components/ui/SectionCard';
 import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
+import { useStreaksContext } from '../streaks/StreakContext';
 
 const healthCards = [
   { title: 'Sleep', description: 'Rest and recovery are the foundation of a calm day.' },
@@ -33,6 +34,7 @@ export function DashboardOverview() {
   }, [health]);
 
   const { latestEntry, entries } = useJournalContext();
+  const { totalHabits, completedToday, bestStreak } = useStreaksContext();
 
   const journalSummary = useMemo(() => {
     if (!entries.length) {
@@ -41,6 +43,13 @@ export function DashboardOverview() {
 
     return latestEntry ? `${new Date(latestEntry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - ${latestEntry.content.slice(0, 50)}` : 'Review your recent entry.';
   }, [entries.length, latestEntry]);
+
+  const streakSummary = useMemo(() => {
+    if (totalHabits === 0) {
+      return 'No streaks yet. Add a habit to begin tracking consistency.';
+    }
+    return `${completedToday}/${totalHabits} done today · best streak ${bestStreak}`;
+  }, [completedToday, totalHabits, bestStreak]);
 
   return (
     <div className="space-y-6">
@@ -81,7 +90,7 @@ export function DashboardOverview() {
             />
             <DashboardCard
               title="Streaks"
-              description="Check your consistency and keep momentum going without distraction."
+              description={streakSummary}
               to="/streaks"
               actionLabel="View"
             />
