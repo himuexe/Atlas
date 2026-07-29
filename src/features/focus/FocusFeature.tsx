@@ -1,9 +1,9 @@
-import { useDailyFocus } from './useDailyFocus';
+import { useFocus } from './FocusContext';
 import { FocusInputForm } from './FocusInputForm';
 import { FocusItemCard } from './FocusItemCard';
 
 export function FocusFeature() {
-  const { items, addItem, toggleCompletion, removeItem, completedCount, canAddItem, maxItems } = useDailyFocus();
+  const { items, addItem, toggleCompletion, removeItem, completedCount, canAddItem, maxItems } = useFocus();
 
   return (
     <div className="space-y-6">
