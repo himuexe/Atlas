@@ -51,6 +51,54 @@ export function DashboardOverview() {
     return `${completedToday}/${totalHabits} done today · best streak ${bestStreak}`;
   }, [completedToday, totalHabits, bestStreak]);
 
+  const dailyPrompt = useMemo(() => {
+    if (items.length === 0) {
+      return 'Choose your top priorities first so the day starts with clarity.';
+    }
+
+    if (completedCount < items.length) {
+      return 'One unfinished priority remains. Finish the next step before adding more.';
+    }
+
+    if (Object.values(health).filter((value) => value !== null).length === 0) {
+      return 'Capture a quick health snapshot to keep your wellbeing in view.';
+    }
+
+    if (entries.length === 0) {
+      return 'Write one short reflection to make space for what mattered today.';
+    }
+
+    if (completedToday < totalHabits) {
+      return 'A small streak check-in can keep the day grounded and consistent.';
+    }
+
+    return 'Your day is looking steady. Keep the momentum calm and intentional.';
+  }, [completedCount, completedToday, entries.length, health, items.length, totalHabits]);
+
+  const statusHighlights = useMemo(
+    () => [
+      {
+        title: 'Focus',
+        message: items.length === 0 ? 'No focus priorities yet.' : `${completedCount}/${items.length} focus items complete.`,
+      },
+      {
+        title: 'Health',
+        message: Object.values(health).filter((value) => value !== null).length === 0
+          ? 'No health metrics logged yet.'
+          : `${Object.values(health).filter((value) => value !== null).length}/4 metrics recorded.`,
+      },
+      {
+        title: 'Journal',
+        message: entries.length === 0 ? 'No entries captured yet.' : `${entries.length} journal ${entries.length === 1 ? 'entry' : 'entries'} saved.`,
+      },
+      {
+        title: 'Streaks',
+        message: totalHabits === 0 ? 'No habits tracked yet.' : `${completedToday}/${totalHabits} habits done today.`,
+      },
+    ],
+    [completedCount, completedToday, entries.length, health, items.length, totalHabits],
+  );
+
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-slate-800 bg-slate-900/95 p-6 shadow-sm shadow-black/20">
@@ -65,6 +113,26 @@ export function DashboardOverview() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
+          <section className="rounded-3xl border border-slate-800 bg-slate-900/95 p-6 shadow-sm shadow-black/20">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Daily rhythm</p>
+                <h3 className="mt-2 text-2xl font-semibold text-white">A calm snapshot of your day</h3>
+              </div>
+              <span className="rounded-3xl bg-slate-800 px-3 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-300">
+                Today
+              </span>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-400">{dailyPrompt}</p>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {statusHighlights.map((item) => (
+                <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+                  <p className="text-sm uppercase tracking-[0.35em] text-slate-500">{item.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{item.message}</p>
+                </div>
+              ))}
+            </div>
+          </section>
           <div className="grid gap-6 lg:grid-cols-2">
             <DashboardCard
               title="Today’s Focus"
