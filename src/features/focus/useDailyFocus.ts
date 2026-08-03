@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FocusItem } from './types';
+import { getFocusItemsFromDB, replaceFocusItemsInDB } from '../../lib/persistence/sqlite';
 
 const MAX_ITEMS = 3;
 
@@ -15,29 +16,69 @@ function createItem(title: string): FocusItem {
 export function useDailyFocus(initialItems: FocusItem[] = []) {
   const [items, setItems] = useState<FocusItem[]>(initialItems);
 
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const persistedItems = await getFocusItemsFromDB();
+        if (mounted && persistedItems.length > 0) {
+          setItems(persistedItems);
+        }
+      } catch (err) {
+        console.error('Failed to load focus items from DB', err);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const syncItems = useCallback(async (nextItems: FocusItem[]) => {
+    try {
+      await replaceFocusItemsInDB(nextItems);
+    } catch (err) {
+      console.error('Failed to persist focus items', err);
+    }
+  }, []);
+
   const addItem = useCallback((title: string) => {
-    if (!title.trim() || items.length >= MAX_ITEMS) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle || items.length >= MAX_ITEMS) {
       return;
     }
 
-    setItems((currentItems) => [...currentItems, createItem(title)]);
-  }, [items.length]);
+    const nextItem = createItem(trimmedTitle);
+    setItems((currentItems) => {
+      const nextItems = [...currentItems, nextItem];
+      void syncItems(nextItems);
+      return nextItems;
+    });
+  }, [items.length, syncItems]);
 
   const toggleCompletion = useCallback((id: string) => {
-    setItems((currentItems) =>
-      currentItems.map((item) =>
+    setItems((currentItems) => {
+      const nextItems = currentItems.map((item) =>
         item.id === id ? { ...item, completed: !item.completed } : item,
-      ),
-    );
-  }, []);
+      );
+      void syncItems(nextItems);
+      return nextItems;
+    });
+  }, [syncItems]);
 
   const removeItem = useCallback((id: string) => {
-    setItems((currentItems) => currentItems.filter((item) => item.id !== id));
-  }, []);
+    setItems((currentItems) => {
+      const nextItems = currentItems.filter((item) => item.id !== id);
+      void syncItems(nextItems);
+      return nextItems;
+    });
+  }, [syncItems]);
 
   const reset = useCallback(() => {
     setItems([]);
-  }, []);
+    void syncItems([]);
+  }, [syncItems]);
 
   const completedCount = useMemo(
     () => items.filter((item) => item.completed).length,

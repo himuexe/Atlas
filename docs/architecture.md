@@ -182,7 +182,9 @@ Static mock data.
 
 Later:
 
-SQLite.
+SQLite-backed persistence via IndexedDB for local-first storage.
+
+The current implementation persists journal, focus, health, and streak data locally so the app remains functional offline.
 
 Eventually:
 

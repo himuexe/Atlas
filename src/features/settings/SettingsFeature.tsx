@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { SectionCard } from '../../components/ui/SectionCard';
+import { exportDatabase, importDatabase } from '../../lib/persistence/sqlite';
 import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
@@ -21,6 +22,9 @@ export function SettingsFeature() {
   const { health, reset: resetHealth } = useHealth();
   const { entries, reset: resetJournal } = useJournalContext();
   const { habits, reset: resetStreaks } = useStreaksContext();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
 
   const selectedPageLabel = useMemo(
     () => startupOptions.find((option) => option.value === startupPage)?.label ?? 'Dashboard',
@@ -41,6 +45,53 @@ export function SettingsFeature() {
     resetHealth();
     resetJournal();
     resetStreaks();
+    setStatusMessage('All local data has been cleared.');
+  };
+
+  const handleExportData = async () => {
+    try {
+      setStatusMessage('Preparing backup export...');
+      const buffer = await exportDatabase();
+      const blob = new Blob([buffer], { type: 'application/octet-stream' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `atlas-backup-${new Date().toISOString().slice(0, 10)}.sqlite`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      setStatusMessage('Backup exported successfully.');
+    } catch (error) {
+      console.error('Failed to export Atlas backup', error);
+      setStatusMessage('Could not export backup. Please try again.');
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      setIsImporting(true);
+      setStatusMessage('Importing backup...');
+      const buffer = await file.arrayBuffer();
+      await importDatabase(buffer);
+      setStatusMessage('Backup imported successfully. Reloading Atlas...');
+      window.setTimeout(() => {
+        window.location.reload();
+      }, 400);
+    } catch (error) {
+      console.error('Failed to import Atlas backup', error);
+      setStatusMessage('Could not import backup. Please choose a valid Atlas backup file.');
+    } finally {
+      setIsImporting(false);
+      event.target.value = '';
+    }
   };
 
   return (
@@ -113,13 +164,45 @@ export function SettingsFeature() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={resetAllData}
-            className="mt-6 w-full rounded-3xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400/30"
-          >
-            Reset all app data
-          </button>
+          <div className="mt-6 flex flex-col gap-3">
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleExportData}
+                className="flex-1 rounded-3xl border border-cyan-500/40 bg-cyan-500/10 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-400/30"
+              >
+                Export backup
+              </button>
+              <button
+                type="button"
+                onClick={handleImportClick}
+                disabled={isImporting}
+                className="flex-1 rounded-3xl border border-emerald-500/40 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isImporting ? 'Importing...' : 'Import backup'}
+              </button>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".sqlite,.db,application/octet-stream"
+              onChange={handleImportFile}
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              onClick={resetAllData}
+              className="w-full rounded-3xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400/30"
+            >
+              Reset all app data
+            </button>
+          </div>
+
+          {statusMessage ? (
+            <p className="mt-4 text-sm text-slate-400">{statusMessage}</p>
+          ) : null}
         </section>
       </div>
 

@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StreakHabit } from './types';
+import { getStreakHabitsFromDB, replaceStreakHabitsInDB } from '../../lib/persistence/sqlite';
 
 const formatDate = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -69,22 +70,57 @@ function createHabit(name: string): StreakHabit {
 export function useStreaks(initialHabits: StreakHabit[] = []) {
   const [habits, setHabits] = useState<StreakHabit[]>(initialHabits);
 
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const persistedHabits = await getStreakHabitsFromDB();
+        if (mounted && persistedHabits.length > 0) {
+          setHabits(persistedHabits);
+        }
+      } catch (err) {
+        console.error('Failed to load streak habits from DB', err);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const syncHabits = useCallback(async (nextHabits: StreakHabit[]) => {
+    try {
+      await replaceStreakHabitsInDB(nextHabits);
+    } catch (err) {
+      console.error('Failed to persist streak habits', err);
+    }
+  }, []);
+
   const addHabit = useCallback((name: string) => {
     const trimmed = name.trim();
     if (!trimmed) {
       return;
     }
 
-    setHabits((current) => [...current, createHabit(trimmed)]);
-  }, []);
+    setHabits((current) => {
+      const nextHabits = [...current, createHabit(trimmed)];
+      void syncHabits(nextHabits);
+      return nextHabits;
+    });
+  }, [syncHabits]);
 
   const removeHabit = useCallback((id: string) => {
-    setHabits((current) => current.filter((habit) => habit.id !== id));
-  }, []);
+    setHabits((current) => {
+      const nextHabits = current.filter((habit) => habit.id !== id);
+      void syncHabits(nextHabits);
+      return nextHabits;
+    });
+  }, [syncHabits]);
 
   const toggleToday = useCallback((id: string) => {
-    setHabits((current) =>
-      current.map((habit) => {
+    setHabits((current) => {
+      const nextHabits = current.map((habit) => {
         if (habit.id !== id) {
           return habit;
         }
@@ -99,13 +135,16 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
           ...habit,
           history: nextHistory,
         };
-      }),
-    );
-  }, []);
+      });
+      void syncHabits(nextHabits);
+      return nextHabits;
+    });
+  }, [syncHabits]);
 
   const reset = useCallback(() => {
     setHabits([]);
-  }, []);
+    void syncHabits([]);
+  }, [syncHabits]);
 
   const summary = useMemo(() => {
     const total = habits.length;

@@ -12,3 +12,4 @@ This document will track notable project updates and releases.
 - Journal feature added with reflection entries, search, and dashboard summary.
 - Streak Counter feature added with habit streaks, today tracking, and dashboard summary.
 - Settings page added with startup page preference and app data reset controls.
+- Local-first persistence added for journal, focus, health, and streak data using SQLite-backed storage.

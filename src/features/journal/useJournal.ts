@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { JournalEntry } from './types';
-import { getJournalEntriesFromDB, addJournalEntryToDB, removeJournalEntryFromDB, initDatabase } from '../../lib/persistence/sqlite';
+import {
+  getJournalEntriesFromDB,
+  addJournalEntryToDB,
+  removeJournalEntryFromDB,
+  initDatabase,
+  clearJournalEntries,
+} from '../../lib/persistence/sqlite';
 
 function createEntry(content: string): JournalEntry {
   return {
@@ -63,7 +69,6 @@ export function useJournal(initialEntries: JournalEntry[] = []) {
     (async () => {
       try {
         await initDatabase();
-        const { clearJournalEntries } = await import('../../lib/persistence/sqlite');
         await clearJournalEntries();
       } catch (err) {
         console.error('Failed to reset DB journal table', err);
