@@ -10,17 +10,17 @@ interface DashboardCardProps {
 
 export function DashboardCard({ title, description, to, badge, actionLabel = 'View' }: DashboardCardProps) {
   return (
-    <article className="group rounded-3xl border border-slate-800 bg-slate-950/95 p-6 shadow-sm shadow-black/20 transition hover:border-cyan-400/30 hover:bg-slate-900/95">
+    <article className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-slate-500">{title}</p>
-          <p className="mt-4 text-sm leading-6 text-slate-400">{description}</p>
+        <div className="min-w-0">
+          <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">{title}</p>
+          <p className="mt-3 text-sm leading-6 text-zinc-400">{description}</p>
         </div>
-        {badge ? <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-slate-300">{badge}</span> : null}
+        {badge ? <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em] text-zinc-300">{badge}</span> : null}
       </div>
       <Link
         to={to}
-        className="mt-6 inline-flex items-center rounded-2xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
+        className="mt-6 inline-flex items-center rounded-2xl border border-white/10 bg-white px-4 py-2 text-sm font-semibold text-black"
       >
         {actionLabel}
       </Link>

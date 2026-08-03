@@ -5,9 +5,9 @@ interface SectionCardProps {
 
 export function SectionCard({ title, description }: SectionCardProps) {
   return (
-    <section className="rounded-3xl border border-slate-800 bg-slate-900/95 p-6 shadow-sm shadow-black/20">
-      <h3 className="text-xl font-semibold text-white">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-slate-400">{description}</p>
+    <section className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
+      <h3 className="text-lg font-semibold tracking-tight text-white">{title}</h3>
+      <p className="mt-3 text-sm leading-6 text-zinc-400">{description}</p>
     </section>
   );
 }

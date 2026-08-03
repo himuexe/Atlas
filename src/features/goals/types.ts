@@ -1,4 +1,4 @@
-export interface FocusItem {
+export interface Goal {
   id: string;
   title: string;
   note?: string;

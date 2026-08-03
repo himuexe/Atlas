@@ -5,6 +5,10 @@ import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
 import { useStreaksContext } from '../streaks/StreakContext';
+import { useSavingsContext } from '../savings/SavingsContext';
+import { useGoalsContext } from '../goals/GoalsContext';
+import { useNotesContext } from '../notes/NotesContext';
+import { summarizeWeek } from './utils';
 
 const healthCards = [
   { title: 'Sleep', description: 'Rest and recovery are the foundation of a calm day.' },
@@ -35,6 +39,9 @@ export function DashboardOverview() {
 
   const { latestEntry, entries } = useJournalContext();
   const { totalHabits, completedToday, bestStreak } = useStreaksContext();
+  const { balance, entries: savingsEntries } = useSavingsContext();
+  const { goals, completedCount: completedGoalsCount } = useGoalsContext();
+  const { notes } = useNotesContext();
 
   const journalSummary = useMemo(() => {
     if (!entries.length) {
@@ -50,6 +57,34 @@ export function DashboardOverview() {
     }
     return `${completedToday}/${totalHabits} done today · best streak ${bestStreak}`;
   }, [completedToday, totalHabits, bestStreak]);
+
+  const savingsSummary = useMemo(() => `Balance ${balance.toFixed(2)}`, [balance]);
+
+  const weeklySnapshot = useMemo(
+    () => summarizeWeek(items, entries, savingsEntries),
+    [entries, items, savingsEntries],
+  );
+
+  const monthlyReview = useMemo(() => {
+    const currentMonth = new Date().toLocaleDateString(undefined, { month: 'long' });
+    const focusCompleted = items.filter((item) => item.completed).length;
+    const focusRate = items.length > 0 ? Math.round((focusCompleted / items.length) * 100) : 0;
+    const journalCount = entries.length;
+    const goalCount = goals.length;
+    const noteCount = notes.length;
+
+    if (journalCount === 0 && items.length === 0 && goalCount === 0) {
+      return {
+        headline: `Your ${currentMonth} review is still empty.`,
+        body: 'Start with one focus priority, one reflection, and one small goal so the month feels intentional.',
+      };
+    }
+
+    return {
+      headline: `Momentum this ${currentMonth}: ${focusRate}% of your focus items are complete.`,
+      body: `${journalCount} journal ${journalCount === 1 ? 'entry' : 'entries'}, ${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}, and ${noteCount} ${noteCount === 1 ? 'note' : 'notes'} are shaping your month so far.`,
+    };
+  }, [entries.length, goals.length, items, notes.length]);
 
   const dailyPrompt = useMemo(() => {
     if (items.length === 0) {
@@ -101,11 +136,11 @@ export function DashboardOverview() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-slate-800 bg-slate-900/95 p-6 shadow-sm shadow-black/20">
-        <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Overview</p>
+      <section className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
+        <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Overview</p>
         <div className="mt-4 space-y-3">
           <h2 className="text-3xl font-semibold tracking-tight text-white">What matters today</h2>
-          <p className="max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="max-w-2xl text-sm leading-6 text-zinc-400">
             Your dashboard surfaces the most important things for the day so you can stay calm and intentional.
           </p>
         </div>
@@ -113,22 +148,29 @@ export function DashboardOverview() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
-          <section className="rounded-3xl border border-slate-800 bg-slate-900/95 p-6 shadow-sm shadow-black/20">
+          <section className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500">Daily rhythm</p>
-                <h3 className="mt-2 text-2xl font-semibold text-white">A calm snapshot of your day</h3>
+                <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Daily rhythm</p>
+                <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">A calm snapshot of your day</h3>
               </div>
-              <span className="rounded-3xl bg-slate-800 px-3 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-300">
+              <span className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-zinc-300">
                 Today
               </span>
             </div>
-            <p className="mt-4 text-sm leading-6 text-slate-400">{dailyPrompt}</p>
+            <p className="mt-4 text-sm leading-6 text-zinc-400">{dailyPrompt}</p>
+            <div className="mt-4 rounded-[20px] border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
+              {weeklySnapshot.prompt}
+            </div>
+            <div className="mt-3 rounded-[20px] border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
+              <p className="font-semibold text-white">{monthlyReview.headline}</p>
+              <p className="mt-2 leading-6 text-zinc-400">{monthlyReview.body}</p>
+            </div>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {statusHighlights.map((item) => (
-                <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-                  <p className="text-sm uppercase tracking-[0.35em] text-slate-500">{item.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{item.message}</p>
+                <div key={item.title} className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+                  <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">{item.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-zinc-300">{item.message}</p>
                 </div>
               ))}
             </div>
@@ -163,6 +205,49 @@ export function DashboardOverview() {
               actionLabel="View"
             />
           </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <DashboardCard
+              title="Savings"
+              description={savingsSummary}
+              to="/savings"
+              actionLabel="Track"
+            />
+            <DashboardCard
+              title="Goals"
+              description={goals.length === 0 ? 'No goals yet. Add one small promise.' : `${completedGoalsCount}/${goals.length} goals complete`}
+              to="/goals"
+              actionLabel="Review"
+            />
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <DashboardCard
+              title="Notes"
+              description={notes.length === 0 ? 'Capture a thought before it slips away.' : `${notes.length} personal notes saved`}
+              to="/notes"
+              actionLabel="Open"
+            />
+          </div>
+
+          <section className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Monthly review</p>
+                <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">A calm look at how the month is unfolding</h3>
+              </div>
+              <span className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-zinc-300">
+                {new Date().toLocaleDateString(undefined, { month: 'long' })}
+              </span>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-zinc-400">
+              Keep a simple record of what was meaningful, what moved forward, and what deserves attention next.
+            </p>
+            <div className="mt-5 rounded-[20px] border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
+              <p className="font-semibold text-white">{monthlyReview.headline}</p>
+              <p className="mt-2 leading-6 text-zinc-400">{monthlyReview.body}</p>
+            </div>
+          </section>
 
           <div className="grid gap-6 lg:grid-cols-3">
             {healthCards.map((item) => (

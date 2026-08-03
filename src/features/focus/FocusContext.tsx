@@ -4,7 +4,7 @@ import { FocusItem } from './types';
 
 interface FocusContextValue {
   items: FocusItem[];
-  addItem: (title: string) => void;
+  addItem: (title: string, note?: string) => void;
   toggleCompletion: (id: string) => void;
   removeItem: (id: string) => void;
   reset: () => void;

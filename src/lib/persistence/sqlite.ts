@@ -15,12 +15,15 @@ CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT);
 CREATE TABLE IF NOT EXISTS journal_entries (
   id TEXT PRIMARY KEY,
   content TEXT NOT NULL,
+  mood TEXT,
+  energy TEXT,
   createdAt TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS focus_items (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
+  note TEXT,
   completed INTEGER NOT NULL DEFAULT 0,
   createdAt TEXT NOT NULL
 );
@@ -38,6 +41,14 @@ CREATE TABLE IF NOT EXISTS streak_habits (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   history TEXT NOT NULL,
+  createdAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS savings_entries (
+  id TEXT PRIMARY KEY,
+  amount REAL NOT NULL,
+  description TEXT NOT NULL,
+  category TEXT NOT NULL,
   createdAt TEXT NOT NULL
 );
 `;
@@ -72,7 +83,11 @@ export async function initDatabase() {
     db = new SQL.Database(bytes);
   } else {
     db = new SQL.Database();
-    db.run(SCHEMA);
+    await saveImmediate();
+  }
+
+  ensureSchema();
+  if (!existing) {
     await saveImmediate();
   }
 
@@ -82,6 +97,37 @@ export async function initDatabase() {
 function execAll(stmt: string, params: any[] = []) {
   if (!db) throw new Error('DB not initialized');
   db.run(stmt, params);
+}
+
+function getTableColumns(tableName: string) {
+  if (!db) throw new Error('DB not initialized');
+  const res = db.exec(`PRAGMA table_info(${tableName});`);
+  if (!res || res.length === 0) return [];
+  return res[0].values.map((row: any[]) => row[1]);
+}
+
+function ensureSchema() {
+  if (!db) throw new Error('DB not initialized');
+
+  db.run(SCHEMA);
+
+  const journalColumns = getTableColumns('journal_entries');
+  if (!journalColumns.includes('mood')) {
+    db.run('ALTER TABLE journal_entries ADD COLUMN mood TEXT;');
+  }
+  if (!journalColumns.includes('energy')) {
+    db.run('ALTER TABLE journal_entries ADD COLUMN energy TEXT;');
+  }
+
+  const focusColumns = getTableColumns('focus_items');
+  if (!focusColumns.includes('note')) {
+    db.run('ALTER TABLE focus_items ADD COLUMN note TEXT;');
+  }
+
+  const savingsColumns = getTableColumns('savings_entries');
+  if (!savingsColumns.includes('category')) {
+    db.run("ALTER TABLE savings_entries ADD COLUMN category TEXT NOT NULL DEFAULT 'savings';");
+  }
 }
 
 function queryRows(stmt: string, params: any[] = []) {
@@ -102,15 +148,21 @@ function queryRows(stmt: string, params: any[] = []) {
 // Journal helpers
 export async function getJournalEntriesFromDB() {
   await initDatabase();
-  const rows = queryRows('SELECT id, content, createdAt FROM journal_entries ORDER BY createdAt DESC');
-  return rows.map((r: any) => ({ id: r.id, content: r.content, createdAt: r.createdAt }));
+  const rows = queryRows('SELECT id, content, mood, energy, createdAt FROM journal_entries ORDER BY createdAt DESC');
+  return rows.map((r: any) => ({
+    id: r.id,
+    content: r.content,
+    mood: r.mood ?? undefined,
+    energy: r.energy ?? undefined,
+    createdAt: r.createdAt,
+  }));
 }
 
-export async function addJournalEntryToDB(entry: { id: string; content: string; createdAt: string }) {
+export async function addJournalEntryToDB(entry: { id: string; content: string; mood?: string; energy?: string; createdAt: string }) {
   await initDatabase();
   execAll(
-    'INSERT OR REPLACE INTO journal_entries (id, content, createdAt) VALUES (?, ?, ?);',
-    [entry.id, entry.content, entry.createdAt],
+    'INSERT OR REPLACE INTO journal_entries (id, content, mood, energy, createdAt) VALUES (?, ?, ?, ?, ?);',
+    [entry.id, entry.content, entry.mood ?? null, entry.energy ?? null, entry.createdAt],
   );
   scheduleSave();
 }
@@ -130,22 +182,23 @@ export async function clearJournalEntries() {
 // Focus helpers
 export async function getFocusItemsFromDB() {
   await initDatabase();
-  const rows = queryRows('SELECT id, title, completed, createdAt FROM focus_items ORDER BY createdAt DESC');
+  const rows = queryRows('SELECT id, title, note, completed, createdAt FROM focus_items ORDER BY createdAt DESC');
   return rows.map((row: any) => ({
     id: row.id,
     title: row.title,
+    note: row.note ?? undefined,
     completed: Boolean(row.completed),
     createdAt: row.createdAt,
   }));
 }
 
-export async function replaceFocusItemsInDB(items: Array<{ id: string; title: string; completed: boolean; createdAt: string }>) {
+export async function replaceFocusItemsInDB(items: Array<{ id: string; title: string; note?: string; completed: boolean; createdAt: string }>) {
   await initDatabase();
   execAll('DELETE FROM focus_items;');
   for (const item of items) {
     execAll(
-      'INSERT OR REPLACE INTO focus_items (id, title, completed, createdAt) VALUES (?, ?, ?, ?);',
-      [item.id, item.title, item.completed ? 1 : 0, item.createdAt],
+      'INSERT OR REPLACE INTO focus_items (id, title, note, completed, createdAt) VALUES (?, ?, ?, ?, ?);',
+      [item.id, item.title, item.note ?? null, item.completed ? 1 : 0, item.createdAt],
     );
   }
   scheduleSave();
@@ -208,6 +261,31 @@ export async function replaceStreakHabitsInDB(habits: Array<{ id: string; name: 
     execAll(
       'INSERT OR REPLACE INTO streak_habits (id, name, history, createdAt) VALUES (?, ?, ?, ?);',
       [habit.id, habit.name, JSON.stringify(habit.history), habit.createdAt],
+    );
+  }
+  scheduleSave();
+}
+
+// Savings helpers
+export async function getSavingsEntriesFromDB() {
+  await initDatabase();
+  const rows = queryRows('SELECT id, amount, description, category, createdAt FROM savings_entries ORDER BY createdAt DESC');
+  return rows.map((row: any) => ({
+    id: row.id,
+    amount: Number(row.amount),
+    description: row.description,
+    category: row.category as 'income' | 'expense' | 'savings',
+    createdAt: row.createdAt,
+  }));
+}
+
+export async function replaceSavingsEntriesInDB(entries: Array<{ id: string; amount: number; description: string; category: 'income' | 'expense' | 'savings'; createdAt: string }>) {
+  await initDatabase();
+  execAll('DELETE FROM savings_entries;');
+  for (const entry of entries) {
+    execAll(
+      'INSERT OR REPLACE INTO savings_entries (id, amount, description, category, createdAt) VALUES (?, ?, ?, ?, ?);',
+      [entry.id, entry.amount, entry.description, entry.category, entry.createdAt],
     );
   }
   scheduleSave();

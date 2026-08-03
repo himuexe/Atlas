@@ -8,10 +8,12 @@ import {
   clearJournalEntries,
 } from '../../lib/persistence/sqlite';
 
-function createEntry(content: string): JournalEntry {
+function createEntry(content: string, mood?: string, energy?: string): JournalEntry {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     content: content.trim(),
+    mood: mood?.trim() || undefined,
+    energy: energy?.trim() || undefined,
     createdAt: new Date().toISOString(),
   };
 }
@@ -43,13 +45,13 @@ export function useJournal(initialEntries: JournalEntry[] = []) {
     };
   }, []);
 
-  const addEntry = useCallback((content: string) => {
+  const addEntry = useCallback((content: string, mood?: string, energy?: string) => {
     const trimmed = content.trim();
     if (!trimmed) {
       return;
     }
 
-    const entry = createEntry(trimmed);
+    const entry = createEntry(trimmed, mood, energy);
     setEntries((current) => [entry, ...current]);
     setQuery('');
 

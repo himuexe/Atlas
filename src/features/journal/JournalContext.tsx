@@ -8,7 +8,7 @@ interface JournalContextValue {
   latestEntry: JournalEntry | null;
   query: string;
   setQuery: (query: string) => void;
-  addEntry: (content: string) => void;
+  addEntry: (content: string, mood?: string, energy?: string) => void;
   removeEntry: (id: string) => void;
   reset: () => void;
 }

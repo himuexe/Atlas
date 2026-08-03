@@ -8,7 +8,7 @@ interface FocusItemCardProps {
 
 export function FocusItemCard({ item, onToggle, onRemove }: FocusItemCardProps) {
   return (
-    <li className="rounded-3xl border border-slate-800 bg-slate-950/95 p-4 shadow-sm shadow-black/20">
+    <li className="rounded-[22px] border border-white/10 bg-[#060606]/90 p-4">
       <div className="flex items-start justify-between gap-4">
         <label className="flex-1 cursor-pointer">
           <div className="flex items-center gap-3">
@@ -16,20 +16,21 @@ export function FocusItemCard({ item, onToggle, onRemove }: FocusItemCardProps) 
               type="checkbox"
               checked={item.completed}
               onChange={() => onToggle(item.id)}
-              className="h-5 w-5 rounded border-slate-700 bg-slate-900 text-cyan-400 focus:ring-cyan-400"
+              className="h-5 w-5 rounded border-white/15 bg-white/5"
             />
             <div>
-              <p className={`text-base font-medium ${item.completed ? 'text-slate-400 line-through' : 'text-white'}`}>
+              <p className={`text-base font-medium ${item.completed ? 'text-zinc-500 line-through' : 'text-white'}`}>
                 {item.title}
               </p>
-              <p className="mt-1 text-xs text-slate-500">Added today</p>
+              {item.note ? <p className="mt-1 text-sm text-zinc-400">{item.note}</p> : null}
+              <p className="mt-1 text-xs uppercase tracking-[0.3em] text-zinc-500">Added today</p>
             </div>
           </div>
         </label>
         <button
           type="button"
           onClick={() => onRemove(item.id)}
-          className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white"
+          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-zinc-400"
         >
           Remove
         </button>

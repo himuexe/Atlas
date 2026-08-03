@@ -4,10 +4,11 @@ import { getFocusItemsFromDB, replaceFocusItemsInDB } from '../../lib/persistenc
 
 const MAX_ITEMS = 3;
 
-function createItem(title: string): FocusItem {
+function createItem(title: string, note?: string): FocusItem {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     title: title.trim(),
+    note: note?.trim() || undefined,
     completed: false,
     createdAt: new Date().toISOString(),
   };
@@ -43,13 +44,13 @@ export function useDailyFocus(initialItems: FocusItem[] = []) {
     }
   }, []);
 
-  const addItem = useCallback((title: string) => {
+  const addItem = useCallback((title: string, note?: string) => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle || items.length >= MAX_ITEMS) {
       return;
     }
 
-    const nextItem = createItem(trimmedTitle);
+    const nextItem = createItem(trimmedTitle, note);
     setItems((currentItems) => {
       const nextItems = [...currentItems, nextItem];
       void syncItems(nextItems);

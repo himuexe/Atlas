@@ -17,19 +17,19 @@ export function StreakInputForm({ onCreate }: StreakInputFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-slate-800 bg-slate-900/95 p-6 shadow-sm shadow-black/20">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
       <div className="space-y-3">
-        <p className="text-sm uppercase tracking-[0.35em] text-slate-500">New habit</p>
+        <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">New habit</p>
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Name a habit to track"
-          className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
+          className="w-full rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/10"
         />
       </div>
       <button
         type="submit"
-        className="inline-flex items-center rounded-3xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
+        className="inline-flex items-center rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black"
       >
         Add habit
       </button>
