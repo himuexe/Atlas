@@ -168,6 +168,6 @@ Clarity is.
 
 ✅ Settings
 
-⬜ Local Storage
+🔧 Local Storage — Dexie (in progress)
 
 ✅ V1 Release
