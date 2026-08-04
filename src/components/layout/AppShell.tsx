@@ -7,10 +7,10 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-transparent text-zinc-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-none gap-4 px-3 py-3 sm:px-4 lg:gap-5 lg:px-5 lg:py-4">
+    <div className="min-h-screen bg-[#050505] text-zinc-100">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1680px] gap-0 px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
         <Sidebar />
-        <main className="flex-1 rounded-[30px] border border-white/10 bg-[#060606]/90 p-4 sm:p-6 lg:p-8">
+        <main className="min-w-0 flex-1 px-1 py-4 sm:px-6 sm:py-6 lg:px-12 lg:py-8">
           {children}
         </main>
       </div>

@@ -1,173 +1,43 @@
 # Roadmap
 
-Atlas follows an incremental development strategy.
-
-The objective is to build a stable foundation before expanding functionality.
-
----
-
-# Version 1.0 — Foundation
-
-## Goal
-
-Build a usable Personal Operating System with excellent fundamentals.
-
-### Dashboard
-
-- Application shell
-- Sidebar
-- Top navigation
-- Responsive layout
-
-### Today's Focus
-
-- Three daily priorities
-- Progress tracking
-- Completion status
-
-### Health Snapshot
-
-- Weight
-- Water
-- Sleep
-- Workout summary
-
-### Journal
-
-- Daily entries
-- Reflection prompts
-- Search
-
-### Streaks
-
-- Simple consistency tracking
-- Current streak
-- Best streak
-
-### Settings
-
-- Theme
-- Personal preferences
-- Data management
-
----
-
-# Version 1.5 — Local First
-
-## Goal
-
-Persist user data.
-
-### Features
-
-- SQLite database
-- Offline support
-- Automatic saves
-- Import & Export
-- Backup & Restore
-
----
-
-# Version 2.0 — Intelligence
-
-## Goal
-
-Transform data into insights.
-
-Possible additions:
-
-- Weekly summaries
-- Monthly reviews
-- Reflection prompts
-- AI-generated insights
-- Pattern recognition
-
-AI should assist—not replace—the user's thinking.
-
----
-
-# Version 3.0 — Ecosystem
-
-## Goal
-
-Integrate with everyday workflows.
-
-Possible features:
-
-- Calendar integration
-- Widgets
-- Notifications
-- Health APIs
-- Cross-device synchronization
-
-Cloud synchronization should remain optional.
-
----
-
-# Version 4.0 — Platform
-
-## Goal
-
-Turn Atlas into a complete personal operating system.
-
-Potential additions:
-
-- Plugin system
-- Custom dashboards
-- Automation
-- Personal knowledge management
-- Advanced analytics
-
-Only pursue these if they align with the project's philosophy.
-
----
-
-# Guiding Principles
-
-Every release should improve:
-
-- Simplicity
-- Stability
-- User experience
-- Performance
-
-Never add features simply because competitors have them.
-
----
-
-# Success Metrics
-
-Atlas succeeds when users:
-
-- Open it daily.
-- Spend less than five minutes navigating.
-- Instantly understand what matters.
-- Feel calmer after using it.
-
-Feature count is not a success metric.
-
-Clarity is.
-
----
-
-# Current Milestone
-
-✅ Project Initialization
-
-✅ Architecture
-
-✅ Dashboard
-
-✅ Focus Module
-
-✅ Health Module
-
-✅ Journal
-
-✅ Streaks
-
-✅ Settings
-
-🔧 Local Storage — Dexie (in progress)
-
-✅ V1 Release
+Last verified: 2026-08-04
+
+Atlas is in active development. The core V1 experience and its local data-management foundation are complete; verification and refinement are the next priorities.
+
+## Completed
+
+| Area | Delivered functionality |
+| --- | --- |
+| Application shell | Routed React application, sidebar navigation, responsive dashboard layout |
+| Dashboard | Daily prompt plus weekly and monthly summaries across Focus, Health, Journal, Streaks, Savings, Goals, and Notes |
+| Focus | Add, complete, remove, and persist focus items |
+| Health | Edit and persist weight, water, sleep, and workout metrics |
+| Journal | Create, search, delete, and persist entries with mood and energy fields |
+| Streaks | Create and remove habits; record daily completion and calculate current/best streaks |
+| Savings | Record and remove income, expense, and savings entries; calculate a running balance |
+| Goals | Add, complete, and remove simple goals |
+| Notes | Add and remove personal notes; surface the latest note |
+| Settings | Select a startup page, export/import the SQLite data store, and reset selected core data |
+| Local persistence | SQLite compiled to WebAssembly, saved in IndexedDB for Focus, Health, Journal, Streaks, and Savings |
+| Unified data management | Goals, Notes, and the startup preference now use the same SQLite-backed data store, with automatic migration from their previous `localStorage` keys |
+| Backup and reset coverage | SQLite backup includes every module and the startup preference; reset clears every module and restores the default startup page |
+| Offline initialization | The SQLite WebAssembly asset is bundled with the application rather than fetched from a CDN |
+| Persistence verification | Automated tests cover database export/import and failed-import data preservation |
+
+## In progress / required for V1 completion
+
+| Area | Remaining work |
+| --- | --- |
+| Quality verification | Add feature-level tests and run accessibility and responsive UI checks. |
+| Documentation cleanup | Remove or migrate the unused Dexie implementation once the persistence direction is finalized. |
+
+## Later, not committed
+
+These are possible future directions, not current work:
+
+- Weekly/monthly review improvements
+- More deliberate personalization
+- Optional native desktop persistence adapter
+- Optional integrations or cloud sync
+
+Authentication, cloud sync, notifications, gamification, analytics, and AI features are outside the current V1 scope unless the product direction changes.

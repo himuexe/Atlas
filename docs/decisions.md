@@ -192,6 +192,28 @@ Future AI interactions should prioritize teaching, discussion, and reasoning.
 
 ---
 
+# ADR-007
+
+## Browser persistence implementation
+
+**Status:** Accepted
+
+### Decision
+
+Atlas persists feature data and the startup preference with `sql.js` and IndexedDB (`idb-keyval`).
+
+### Context
+
+The implementation moved beyond the earlier Dexie proposal and now ships an SQLite WebAssembly database for Journal, Focus, Health, Streaks, Savings, Goals, Notes, and settings.
+
+### Consequences
+
+- Backups and reset cover the SQLite-backed data set, including settings.
+- The earlier Dexie prototype was removed during the V1 cleanup; any future persistence change requires a new architecture decision.
+- Vite bundles the `sql.js` WebAssembly asset, removing the CDN dependency during initialization.
+
+---
+
 # Future Decisions
 
 Every significant architectural change should receive a new ADR.

@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getNotesFromDB, replaceNotesInDB } from '../../lib/persistence/sqlite';
 import { Note } from './types';
+
+const LEGACY_STORAGE_KEY = 'atlas-notes';
 
 function createNote(title: string, content: string): Note {
   return {
@@ -10,44 +13,77 @@ function createNote(title: string, content: string): Note {
   };
 }
 
+function getLegacyNotes(): Note[] {
+  try {
+    const stored = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as Note[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function useNotes(initialNotes: Note[] = []) {
   const [notes, setNotes] = useState<Note[]>(initialNotes);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem('atlas-notes');
-    if (stored) {
+    let mounted = true;
+
+    void (async () => {
       try {
-        const parsed = JSON.parse(stored) as Note[];
-        setNotes(parsed);
-      } catch {
-        window.localStorage.removeItem('atlas-notes');
+        const persistedNotes = await getNotesFromDB();
+        const nextNotes = persistedNotes.length > 0 ? persistedNotes : getLegacyNotes();
+
+        if (persistedNotes.length === 0 && nextNotes.length > 0) {
+          await replaceNotesInDB(nextNotes);
+        }
+        window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+
+        if (mounted) {
+          setNotes(nextNotes);
+        }
+      } catch (error) {
+        console.error('Failed to load notes from DB', error);
       }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const syncNotes = useCallback(async (nextNotes: Note[]) => {
+    try {
+      await replaceNotesInDB(nextNotes);
+    } catch (error) {
+      console.error('Failed to persist notes', error);
     }
   }, []);
 
-  useEffect(() => {
-    window.localStorage.setItem('atlas-notes', JSON.stringify(notes));
-  }, [notes]);
-
   const addNote = useCallback((title: string, content: string) => {
-    const trimmedTitle = title.trim();
-    const trimmedContent = content.trim();
-    if (!trimmedTitle || !trimmedContent) return;
+    if (!title.trim() || !content.trim()) return;
 
-    const nextNote = createNote(trimmedTitle, trimmedContent);
-    setNotes((current) => [nextNote, ...current]);
-  }, []);
+    const nextNote = createNote(title, content);
+    setNotes((current) => {
+      const nextNotes = [nextNote, ...current];
+      void syncNotes(nextNotes);
+      return nextNotes;
+    });
+  }, [syncNotes]);
 
   const removeNote = useCallback((id: string) => {
-    setNotes((current) => current.filter((note) => note.id !== id));
-  }, []);
+    setNotes((current) => {
+      const nextNotes = current.filter((note) => note.id !== id);
+      void syncNotes(nextNotes);
+      return nextNotes;
+    });
+  }, [syncNotes]);
+
+  const reset = useCallback(() => {
+    setNotes([]);
+    void syncNotes([]);
+  }, [syncNotes]);
 
   const latestNote = useMemo(() => notes[0] ?? null, [notes]);
 
-  return {
-    notes,
-    latestNote,
-    addNote,
-    removeNote,
-  };
+  return { notes, latestNote, addNote, removeNote, reset };
 }

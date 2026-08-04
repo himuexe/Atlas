@@ -7,10 +7,10 @@ export function GoalsFeature() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Goal tracking</p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">Keep a few gentle commitments visible</h2>
-        <p className="max-w-2xl text-sm leading-6 text-zinc-400">
+      <header className="border-b border-white/10 pb-8">
+        <p className="eyebrow">Goal tracking</p>
+        <h2 className="page-title mt-4">Keep a few gentle commitments visible.</h2>
+        <p className="page-copy mt-4">
           Goals should feel calm and helpful. Keep them small enough to follow through.
         </p>
       </header>

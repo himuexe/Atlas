@@ -4,6 +4,7 @@ import { StartupPage, useSettings } from './useSettings';
 interface SettingsContextValue {
   startupPage: StartupPage;
   setStartupPage: (page: StartupPage) => void;
+  reset: () => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);

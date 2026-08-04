@@ -7,10 +7,10 @@ export function NotesFeature() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Personal notes</p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">Keep a few favorite thoughts close at hand</h2>
-        <p className="max-w-2xl text-sm leading-6 text-zinc-400">
+      <header className="border-b border-white/10 pb-8">
+        <p className="eyebrow">Personal notes</p>
+        <h2 className="page-title mt-4">Keep a few favorite thoughts close at hand.</h2>
+        <p className="page-copy mt-4">
           Notes are for the small reflections, reminders, and lessons that deserve a little space.
         </p>
       </header>

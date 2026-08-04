@@ -1,358 +1,53 @@
 # Atlas Architecture
 
+Last verified: 2026-08-04
+
 ## Overview
 
-Atlas is a **Personal Operating System** designed around one central philosophy:
-
-> Reduce the friction between who the user is today and who they want to become.
-
-The architecture emphasizes simplicity, maintainability, and long-term scalability.
-
-Rather than designing for every possible feature today, Atlas grows incrementally while preserving a clean structure.
-
----
-
-# Architectural Goals
-
-Atlas is designed to be:
-
-- Local-first
-- Offline-friendly
-- Modular
-- Easy to understand
-- Easy to extend
-- Easy to test
-
-Every architectural decision should support these goals.
-
----
-
-# High-Level Architecture
+Atlas is a browser-based React application organized around feature modules. React Router owns navigation, feature contexts expose feature state, and persistence is intentionally local-first.
 
 ```text
-User
- │
- ▼
-React Application
- │
- ▼
-React Router
- │
- ▼
-Feature Modules
- │
- ▼
-Reusable Components
- │
- ▼
-State Management
- │
- ▼
-Persistence Layer
- │
- ▼
-Local Database
+BrowserRouter
+  -> App shell and routes
+    -> Feature providers and feature components
+      -> Feature hooks
+        -> Local persistence
+           - SQLite WASM database stored in IndexedDB
 ```
 
-Initially, only the first five layers will exist.
+## Implemented modules
 
-The persistence layer will be introduced after Version 1.
+- `dashboard`: cross-feature daily, weekly, and monthly summaries
+- `focus`, `health`, `journal`, `streaks`, `savings`, `goals`, `notes`: feature state backed by `lib/persistence/sqlite.ts`
+- `settings`: startup preference and backup import/export through the SQLite database
 
----
+Shared layout belongs in `src/components/layout`, generic cards in `src/components/ui`, routes in `src/pages`, and shared browser-persistence code in `src/lib/persistence`.
 
-# Project Structure
+## Persistence model
 
-```text
-src
-│
-├── assets/
-├── components/
-│   ├── layout/
-│   └── ui/
-│
-├── features/
-│   ├── dashboard/
-│   ├── health/
-│   ├── journal/
-│   ├── settings/
-│   └── streaks/
-│
-├── hooks/
-├── lib/
-├── pages/
-├── types/
-├── utils/
-└── main.tsx
-```
+`src/lib/persistence/sqlite.ts` initializes `sql.js`, creates the schema, and debounces exports of the in-memory database to IndexedDB using `idb-keyval`. The database currently stores:
 
----
+- journal entries
+- focus items
+- health state
+- streak habits
+- savings entries
+- goals
+- notes
+- settings, including the startup preference
 
-# Architectural Layers
+Goals, Notes, and the startup preference are migrated automatically from their former `localStorage` keys when no corresponding SQLite data exists. They are then removed from `localStorage`.
 
-## Layout Layer
+Vite bundles the `sql.js` WebAssembly asset with the application, so database initialization does not depend on a CDN.
 
-Responsible for application structure.
+## Deliberate constraints
 
-Examples:
+- No backend, authentication, cloud sync, analytics, notifications, or AI services in V1.
+- Context is used for cross-page feature state; no external global-state library is required today.
+- Route pages remain small composition boundaries; feature logic lives in feature folders.
 
-- Sidebar
-- Top Navigation
-- App Shell
+## Follow-up architecture work
 
-This layer should never contain business logic.
-
----
-
-## UI Layer
-
-Reusable interface components.
-
-Examples:
-
-- Card
-- Button
-- Input
-- Dialog
-- Badge
-
-These components should remain generic.
-
----
-
-## Feature Layer
-
-Business logic belongs here.
-
-Each feature should own:
-
-- Components
-- Hooks
-- Types
-- Utilities
-- Services
-
-Example:
-
-```text
-features/
-    dashboard/
-        components/
-        hooks/
-        types/
-        utils/
-```
-
-Feature code should not leak into other features.
-
----
-
-## State Layer
-
-State should evolve gradually.
-
-Preferred progression:
-
-Local Component State
-
-↓
-
-Context
-
-↓
-
-Zustand (if necessary)
-
-↓
-
-Persistent Storage
-
-↓
-
-Synchronization
-
-Avoid introducing global state before it is required.
-
----
-
-## Data Layer
-
-Initially:
-
-Static mock data.
-
-Later:
-
-SQLite-backed persistence via IndexedDB for local-first storage.
-
-The current implementation persists journal, focus, health, and streak data locally so the app remains functional offline.
-
-Eventually:
-
-Optional cloud synchronization.
-
-The application should remain fully functional offline.
-
----
-
-# Routing
-
-React Router is responsible for navigation.
-
-Each page should be responsible only for layout and composition.
-
-Business logic should remain inside feature modules.
-
----
-
-# Component Philosophy
-
-Components should be:
-
-Small.
-
-Focused.
-
-Reusable.
-
-Easy to test.
-
-A component should have a single responsibility.
-
----
-
-# Folder Responsibilities
-
-## components/
-
-Shared reusable UI.
-
-## features/
-
-Feature-specific code.
-
-## hooks/
-
-Reusable custom hooks.
-
-## lib/
-
-Utility functions and shared helpers.
-
-## types/
-
-Shared TypeScript types.
-
-## pages/
-
-Route entry points.
-
----
-
-# Data Flow
-
-The preferred data flow is:
-
-```text
-Data
- │
- ▼
-State
- │
- ▼
-Components
- │
- ▼
-User Interaction
- │
- ▼
-State Update
- │
- ▼
-UI Re-render
-```
-
-Keep data flow predictable and unidirectional.
-
----
-
-# Design Principles
-
-Atlas follows several design principles.
-
-## Simplicity
-
-Choose the simplest solution that satisfies the requirement.
-
----
-
-## Composition
-
-Build larger features from smaller components.
-
-Avoid inheritance.
-
----
-
-## Scalability
-
-Structure code so future features fit naturally without major refactoring.
-
----
-
-## Consistency
-
-Maintain consistent naming.
-
-Maintain consistent folder organization.
-
-Maintain consistent coding patterns.
-
----
-
-# Future Architecture
-
-As Atlas grows, the following layers may be introduced:
-
-- SQLite persistence
-- Background synchronization
-- AI services
-- Import/Export
-- Plugin architecture
-- Calendar integration
-
-These additions should not require significant changes to existing feature modules.
-
----
-
-# Non-Goals
-
-Atlas intentionally avoids:
-
-- Microservices
-- Over-engineering
-- Complex state management
-- Excessive abstractions
-- Premature optimization
-
-Complexity should only be introduced when justified by real requirements.
-
----
-
-# Architectural Principle
-
-Before introducing any new architecture, ask:
-
-1. Does this solve a real problem?
-2. Is it simpler than the alternatives?
-3. Will future developers understand it?
-4. Does it align with Atlas' philosophy?
-
-If not, rethink the solution.
-
----
-
-# Final Thought
-
-Good architecture is not about preparing for every possible future.
-
-It is about making today's decisions in a way that keeps tomorrow's options open.
+1. Add feature-level tests and expand persistence coverage to reset and legacy-storage migration.
+2. Verify an offline cold start and the responsive, accessible user flows.
+3. Keep the persistence layer focused on the active SQLite-in-IndexedDB implementation unless a future architecture decision justifies a change.

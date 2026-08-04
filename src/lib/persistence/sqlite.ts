@@ -1,4 +1,5 @@
 import initSqlJs from 'sql.js';
+import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import { get, set } from 'idb-keyval';
 
 const DB_KEY = 'atlas.sqlite';
@@ -51,6 +52,21 @@ CREATE TABLE IF NOT EXISTS savings_entries (
   category TEXT NOT NULL,
   createdAt TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS goals (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  note TEXT,
+  completed INTEGER NOT NULL DEFAULT 0,
+  createdAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS notes (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  createdAt TEXT NOT NULL
+);
 `;
 
 function scheduleSave() {
@@ -73,8 +89,7 @@ export async function initDatabase() {
 
   // Lazy load sql.js and initialize DB from IndexedDB or create new one.
   if (!SQL) {
-    // Use a CDN-located wasm file to avoid complex bundler configuration.
-    SQL = await (initSqlJs as any)({ locateFile: (file: string) => `https://unpkg.com/sql.js@1.8.0/dist/${file}` });
+    SQL = await (initSqlJs as any)({ locateFile: () => sqlWasmUrl });
   }
 
   const existing = await get(DB_KEY);
@@ -291,6 +306,74 @@ export async function replaceSavingsEntriesInDB(entries: Array<{ id: string; amo
   scheduleSave();
 }
 
+// Goals helpers
+export async function getGoalsFromDB() {
+  await initDatabase();
+  const rows = queryRows('SELECT id, title, note, completed, createdAt FROM goals ORDER BY createdAt DESC');
+  return rows.map((row: any) => ({
+    id: row.id,
+    title: row.title,
+    note: row.note ?? undefined,
+    completed: Boolean(row.completed),
+    createdAt: row.createdAt,
+  }));
+}
+
+export async function replaceGoalsInDB(goals: Array<{ id: string; title: string; note?: string; completed: boolean; createdAt: string }>) {
+  await initDatabase();
+  execAll('DELETE FROM goals;');
+  for (const goal of goals) {
+    execAll(
+      'INSERT OR REPLACE INTO goals (id, title, note, completed, createdAt) VALUES (?, ?, ?, ?, ?);',
+      [goal.id, goal.title, goal.note ?? null, goal.completed ? 1 : 0, goal.createdAt],
+    );
+  }
+  scheduleSave();
+}
+
+// Notes helpers
+export async function getNotesFromDB() {
+  await initDatabase();
+  const rows = queryRows('SELECT id, title, content, createdAt FROM notes ORDER BY createdAt DESC');
+  return rows.map((row: any) => ({
+    id: row.id,
+    title: row.title,
+    content: row.content,
+    createdAt: row.createdAt,
+  }));
+}
+
+export async function replaceNotesInDB(notes: Array<{ id: string; title: string; content: string; createdAt: string }>) {
+  await initDatabase();
+  execAll('DELETE FROM notes;');
+  for (const note of notes) {
+    execAll(
+      'INSERT OR REPLACE INTO notes (id, title, content, createdAt) VALUES (?, ?, ?, ?);',
+      [note.id, note.title, note.content, note.createdAt],
+    );
+  }
+  scheduleSave();
+}
+
+// Settings helpers
+export async function getSettingFromDB(key: string) {
+  await initDatabase();
+  const rows = queryRows('SELECT value FROM settings WHERE key = ? LIMIT 1;', [key]);
+  return rows.length > 0 ? String(rows[0].value) : null;
+}
+
+export async function setSettingInDB(key: string, value: string) {
+  await initDatabase();
+  execAll('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?);', [key, value]);
+  scheduleSave();
+}
+
+export async function removeSettingFromDB(key: string) {
+  await initDatabase();
+  execAll('DELETE FROM settings WHERE key = ?;', [key]);
+  scheduleSave();
+}
+
 export async function exportDatabase() {
   await initDatabase();
   return db.export();
@@ -298,10 +381,20 @@ export async function exportDatabase() {
 
 export async function importDatabase(buffer: Uint8Array | ArrayBuffer) {
   if (!SQL) {
-    SQL = await (initSqlJs as any)({ locateFile: (file: string) => `https://unpkg.com/sql.js@1.8.0/dist/${file}` });
+    SQL = await (initSqlJs as any)({ locateFile: () => sqlWasmUrl });
   }
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  const previousDatabase = db;
+  const wasInitialized = initialized;
+
   db = new SQL.Database(bytes);
-  initialized = true;
-  scheduleSave();
+  try {
+    ensureSchema();
+    initialized = true;
+    await saveImmediate();
+  } catch (error) {
+    db = previousDatabase;
+    initialized = wasInitialized;
+    throw error;
+  }
 }

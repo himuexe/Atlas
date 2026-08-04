@@ -14,28 +14,29 @@ const navigation = [
 
 function linkClass(isActive: boolean) {
   return [
-    'block rounded-2xl px-4 py-3 text-sm font-medium transition',
+    'block rounded-lg px-3 py-2.5 text-sm transition',
     isActive
-      ? 'bg-white text-black'
-      : 'text-zinc-300 hover:bg-white/10 hover:text-white',
+      ? 'bg-white text-black font-medium'
+      : 'text-zinc-500 hover:bg-white/[0.06] hover:text-white',
   ].join(' ');
 }
 
 export function Sidebar() {
   return (
-    <aside className="sticky top-4 hidden h-fit w-[260px] shrink-0 flex-col gap-4 rounded-[30px] border border-white/10 bg-[#060606]/90 p-4 lg:flex">
-      <div className="px-1 py-1">
-        <p className="text-[11px] uppercase tracking-[0.35em] text-zinc-500">Atlas</p>
-        <h1 className="mt-3 text-xl font-semibold tracking-tight text-white">Daily rhythm</h1>
+    <aside className="sticky top-6 hidden h-[calc(100vh-48px)] w-[220px] shrink-0 flex-col border-r border-white/10 pr-6 lg:flex">
+      <div className="px-3 py-2">
+        <h1 className=" font-medium uppercase tracking-[0.28em] text-white">Atlas</h1>
       </div>
 
-      <nav className="mt-2 space-y-1.5">
+      <nav className="mt-8 space-y-1">
         {navigation.map((item) => (
           <NavLink key={item.path} to={item.path} className={({ isActive }) => linkClass(isActive)}>
             {item.label}
           </NavLink>
         ))}
       </nav>
+
+      <p className="mt-auto px-3 pb-2 text-[11px] leading-5 text-zinc-600">Less noise. More intention.</p>
     </aside>
   );
 }

@@ -1,326 +1,52 @@
 # Atlas
 
-<div align="center">
+Atlas is a calm, local-first personal operating system for deciding what matters today. It is intentionally focused: the product favors a small number of useful views over a busy productivity dashboard.
 
-# 🧭 Atlas
+**Project status:** active development. The core app is usable locally; V1 data-management coverage is still incomplete. See the [roadmap](docs/roadmap.md) for the precise status.
 
-### *A Personal Operating System*
+## What is available now
 
-**Reduce the friction between who you are today and who you want to become.**
+- Dashboard with daily, weekly, and monthly summaries
+- Today's Focus: create, complete, and remove priorities
+- Health Snapshot: record weight, water, sleep, and workout data
+- Journal: add, search, and delete reflection entries
+- Streaks: track habits and daily completion history
+- Savings: record income, expenses, and savings entries
+- Goals and Notes: lightweight personal planning and capture
+- Settings: select a startup page, reset selected core data, and import/export the SQLite-backed data store
 
----
+## Current limitations
 
-*A calm, local-first application designed to help you focus on what matters instead of managing endless productivity systems.*
+- Atlas stores all feature data and the startup preference locally in SQLite-backed IndexedDB. Export a backup before clearing browser data.
+- Automated tests currently cover a small set of utility functions only.
 
-**Status:** 🚧 Active Development
+## Technology
 
-</div>
+- React 19, TypeScript 5, Vite 5
+- React Router 6 and Tailwind CSS 3
+- `sql.js` persisted through IndexedDB with `idb-keyval`
+- SQLite WebAssembly bundled with the application for offline initialization
 
----
-
-# Philosophy
-
-Most productivity applications eventually become another thing you have to manage.
-
-Atlas is built on a different philosophy.
-
-Instead of trying to optimize every second of your day, Atlas aims to create clarity.
-
-It acts as a personal operating system that helps you make better daily decisions while staying aligned with your long-term goals.
-
-The objective isn't to do more.
-
-It's to do what actually matters.
-
----
-
-# Vision
-
-Atlas is designed around three simple principles:
-
-- Reduce cognitive load.
-- Make important information instantly accessible.
-- Encourage consistency rather than perfection.
-
-Every feature added to Atlas should support these principles.
-
-If a feature introduces unnecessary complexity, it does not belong in the application.
-
----
-
-# Core Features (Version 1)
-
-The first release intentionally keeps the scope small.
-
-## Dashboard
-
-A clean overview of everything important today.
-
----
-
-## Today's Focus
-
-Select and track the three most important tasks for the day.
-
----
-
-## Health Snapshot
-
-A quick overview of personal health metrics.
-
-Future versions may include:
-
-- Weight
-- Water Intake
-- Sleep
-- Steps
-- Workout Tracking
-
----
-
-## Daily Journal
-
-A simple place to capture thoughts, wins, reflections and lessons.
-
----
-
-## Streak Counter
-
-Track consistency for selected habits without unnecessary gamification.
-
----
-
-## Settings
-
-Personalization and application preferences.
-
----
-
-# Future Roadmap
-
-Atlas is intentionally being developed in stages.
-
-## Phase 1 — Foundation
-
-- Dashboard
-- Journal
-- Health Snapshot
-- Today's Focus
-- Streak Tracking
-
----
-
-## Phase 2 — Local First
-
-- SQLite Storage
-- Persistent Data
-- Offline Support
-- Backup & Restore
-
----
-
-## Phase 3 — Intelligence
-
-- AI Reflection
-- Weekly Summaries
-- Personalized Suggestions
-- Goal Tracking
-
----
-
-## Phase 4 — Ecosystem
-
-- Calendar Integration
-- Notifications
-- Widgets
-- Cross Device Sync
-- Optional Cloud Backup
-
----
-
-# Tech Stack
-
-## Frontend
-
-- React 19
-- TypeScript 6
-- Vite 8
-- React Router
-
-## Styling
-
-- Tailwind CSS v4
-- shadcn/ui
-- Base UI
-
-## Utilities
-
-- Lucide React
-- clsx
-- class-variance-authority
-- tailwind-merge
-
----
-
-# Design Principles
-
-Atlas follows several engineering principles.
-
-### Local First
-
-Your data belongs to you.
-
-The application should work without an internet connection whenever possible.
-
----
-
-### Minimal by Default
-
-Show only what is useful today.
-
-Avoid overwhelming dashboards and unnecessary metrics.
-
----
-
-### Performance Matters
-
-Fast startup.
-
-Minimal dependencies.
-
-Efficient rendering.
-
----
-
-### Simplicity Wins
-
-Complexity should exist inside the codebase—not in the user experience.
-
----
-
-# Development Philosophy
-
-Atlas is also a learning project.
-
-The goal is not only to build an application, but to build it correctly.
-
-Every architectural decision should have a clear reason.
-
-Every dependency should solve a real problem.
-
-Every feature should be understandable months after it is written.
-
----
-
-# Project Structure
-
-```text
-atlas
-│
-├── docs/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── features/
-│   ├── hooks/
-│   ├── lib/
-│   ├── pages/
-│   ├── types/
-│   └── utils/
-│
-├── README.md
-├── AGENTS.md
-└── CONTRIBUTING.md
-```
-
-This structure will evolve as the project grows while maintaining clear separation between reusable components and feature-specific logic.
-
----
-
-# Getting Started
-
-Clone the repository.
-
-```bash
-git clone <repository-url>
-```
-
-Install dependencies.
+## Getting started
 
 ```bash
 npm install
-```
-
-Start the development server.
-
-```bash
 npm run dev
 ```
 
-Create a production build.
+Create a production build with:
 
 ```bash
 npm run build
 ```
 
----
+## Documentation
 
-# Current Status
+- [Roadmap and delivery status](docs/roadmap.md)
+- [Architecture](docs/architecture.md)
+- [Architecture decisions](docs/decisions.md)
+- [Changelog](docs/changelog.md)
 
-Atlas is currently under active development.
+## Project principles
 
-The project is being built incrementally with an emphasis on:
-
-- Clean Architecture
-- Maintainability
-- Scalability
-- Strong TypeScript Practices
-- Modern React Patterns
-
----
-
-# Why Atlas Exists
-
-Atlas is not intended to replace every productivity application.
-
-Instead, it serves as a calm dashboard that helps answer one simple question:
-
-> **"What should I focus on today?"**
-
-Everything else is secondary.
-
----
-
-# Contributing
-
-Although Atlas is currently a personal project, suggestions, discussions and ideas are always welcome.
-
-Please read **CONTRIBUTING.md** before opening issues or submitting changes.
-
----
-
-# Documentation
-
-Additional project documentation can be found inside the **docs/** directory.
-
-- Architecture
-- Roadmap
-- Coding Standards
-- Design Decisions
-- Changelog
-
----
-
-# License
-
-This project is licensed under the MIT License.
-
----
-
-<div align="center">
-
-### "Small improvements, repeated consistently, create extraordinary outcomes."
-
-Built with ❤️ using React, TypeScript and Vite.
-
-</div>
+Atlas should feel calm, minimal, intentional, fast, and personal. The detailed product and engineering guidance lives in [VISION.md](VISION.md), [PROJECT_PRINCIPLES.md](PROJECT_PRINCIPLES.md), and [AGENTS.md](AGENTS.md).

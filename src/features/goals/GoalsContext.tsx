@@ -7,6 +7,7 @@ interface GoalsContextValue {
   addGoal: (title: string, note?: string) => void;
   toggleGoal: (id: string) => void;
   removeGoal: (id: string) => void;
+  reset: () => void;
   completedCount: number;
 }
 

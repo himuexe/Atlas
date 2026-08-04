@@ -1,16 +1,22 @@
 # Changelog
 
-This document will track notable project updates and releases.
-
 ## Unreleased
 
-- Project scaffold initialized with Vite, React, TypeScript, and Tailwind CSS.
-- Dashboard overview implemented and app theme updated to dark mode.
-- Today’s Focus feature added with task creation, completion, and progress tracking.
-- Dashboard now uses shared focus state and links to feature pages.
-- Health Snapshot feature added with shared health state and editable metrics.
-- Journal feature added with reflection entries, search, and dashboard summary.
-- Streak Counter feature added with habit streaks, today tracking, and dashboard summary.
-- Settings page added with startup page preference and app data reset controls.
-- Local-first persistence added for journal, focus, health, and streak data using SQLite-backed storage.
-- Dashboard now includes a daily rhythm summary that turns existing data into gentle guidance for the day.
+### Added
+
+- Dashboard summaries for daily rhythm, weekly activity, and monthly progress.
+- Focus, Health, Journal, Streaks, Savings, Goals, Notes, and Settings feature pages.
+- Local persistence for Focus, Health, Journal, Streaks, and Savings through SQLite WebAssembly stored in IndexedDB.
+- SQLite database backup export and import from Settings.
+- Goals, Notes, and startup-page preference moved into the SQLite-backed data store, with migration from their previous browser storage keys.
+- Complete backup and reset coverage for every current module and startup preference.
+- SQLite WebAssembly bundled with the app rather than loaded from a CDN.
+- Persistence tests for backup round-tripping and failed-import data preservation.
+
+### Documentation
+
+- Updated project status, roadmap, architecture, and persistence decisions to match the implementation on 2026-08-04.
+
+### Cleanup
+
+- Removed the unused Dexie prototype, its shared types, and the unused `useLocalStorage` hook.

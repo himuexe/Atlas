@@ -32,10 +32,10 @@ export function SavingsFeature() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Savings</p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">Track your progress with calm, simple numbers</h2>
-        <p className="max-w-2xl text-sm leading-6 text-zinc-400">{summary}</p>
+      <header className="border-b border-white/10 pb-8">
+        <p className="eyebrow">Savings</p>
+        <h2 className="page-title mt-4">Track progress with calm, simple numbers.</h2>
+        <p className="page-copy mt-4">{summary}</p>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">

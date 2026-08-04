@@ -6,6 +6,9 @@ import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
 import { useSettingsContext } from './SettingsContext';
 import { useStreaksContext } from '../streaks/StreakContext';
+import { useSavingsContext } from '../savings/SavingsContext';
+import { useGoalsContext } from '../goals/GoalsContext';
+import { useNotesContext } from '../notes/NotesContext';
 
 const startupOptions = [
   { label: 'Dashboard', value: '/dashboard' as const },
@@ -13,15 +16,21 @@ const startupOptions = [
   { label: 'Health Snapshot', value: '/health' as const },
   { label: 'Journal', value: '/journal' as const },
   { label: 'Streaks', value: '/streaks' as const },
+  { label: 'Savings', value: '/savings' as const },
+  { label: 'Goals', value: '/goals' as const },
+  { label: 'Notes', value: '/notes' as const },
   { label: 'Settings', value: '/settings' as const },
 ];
 
 export function SettingsFeature() {
-  const { startupPage, setStartupPage } = useSettingsContext();
+  const { startupPage, setStartupPage, reset: resetSettings } = useSettingsContext();
   const { items, reset: resetFocus } = useFocus();
   const { health, reset: resetHealth } = useHealth();
   const { entries, reset: resetJournal } = useJournalContext();
   const { habits, reset: resetStreaks } = useStreaksContext();
+  const { entries: savingsEntries, reset: resetSavings } = useSavingsContext();
+  const { goals, reset: resetGoals } = useGoalsContext();
+  const { notes, reset: resetNotes } = useNotesContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -35,7 +44,7 @@ export function SettingsFeature() {
 
   const resetAllData = () => {
     const confirmed = window.confirm(
-      'Resetting app data will clear progress from focus, health, journal, and streaks. This cannot be undone.',
+      'Resetting app data will clear every entry, note, goal, habit, preference, and saved progress. This cannot be undone.',
     );
     if (!confirmed) {
       return;
@@ -45,6 +54,10 @@ export function SettingsFeature() {
     resetHealth();
     resetJournal();
     resetStreaks();
+    resetSavings();
+    resetGoals();
+    resetNotes();
+    resetSettings();
     setStatusMessage('All local data has been cleared.');
   };
 
@@ -96,10 +109,10 @@ export function SettingsFeature() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Settings</p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">Customize how Atlas opens and manages your data</h2>
-        <p className="max-w-2xl text-sm leading-6 text-zinc-400">
+      <header className="border-b border-white/10 pb-8">
+        <p className="eyebrow">Settings</p>
+        <h2 className="page-title mt-4">Customize how Atlas opens and manages your data.</h2>
+        <p className="page-copy mt-4">
           Settings let you control where the app opens first and reset your current progress when you want a fresh start.
         </p>
       </header>
@@ -142,7 +155,7 @@ export function SettingsFeature() {
           <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Data management</p>
           <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white">Keep your workspace clean</h3>
           <p className="mt-4 text-sm leading-6 text-zinc-400">
-            If you'd like to start over, reset all current entries and progress. This clears focus items, health metrics, journal entries, and streaks.
+            If you'd like to start over, reset every local entry, preference, and saved progress.
           </p>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -161,6 +174,18 @@ export function SettingsFeature() {
             <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
               <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Streaks</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{habits.length}</p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Savings entries</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{savingsEntries.length}</p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Goals</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{goals.length}</p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Notes</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{notes.length}</p>
             </div>
           </div>
 
@@ -208,7 +233,7 @@ export function SettingsFeature() {
 
       <SectionCard
         title="About this version"
-        description="Settings in V1 are designed to remain lightweight. Future updates will expand personalization and persistent storage across all modules."
+        description="Atlas stores your entries and startup preference locally. Export a backup before resetting or moving to a new browser."
       />
     </div>
   );
