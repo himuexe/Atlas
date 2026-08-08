@@ -12,7 +12,7 @@ Modern productivity software has become overwhelming.
 
 Dashboards become cluttered.
 
-Habit trackers become games.
+Habit trackers can become noisy games.
 
 Task managers become endless lists.
 
@@ -77,6 +77,10 @@ No distracting notifications.
 No visual clutter.
 
 Atlas should feel quiet.
+
+### Personal motivation, not pressure
+
+Atlas may use private XP, levels, and milestones to reward showing up. These mechanics must remain secondary to the user’s real life: no leaderboards, no social comparison, no XP loss, and no punishment for missed days.
 
 ---
 

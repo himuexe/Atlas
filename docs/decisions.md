@@ -214,6 +214,30 @@ The implementation moved beyond the earlier Dexie proposal and now ships an SQLi
 
 ---
 
+# ADR-008
+
+## Personal gamification for V2
+
+**Status:** Accepted
+
+### Decision
+
+Atlas V2 will add Daily Check-ins, private XP, one overall level, personal milestones, and a weekly recap. The system is designed for the owner of this personal workspace, not a broader guided-reset audience.
+
+### Context
+
+The existing product already records the actions that matter: focus completion, health logging, habits, journal entries, goals, and reflections. A small motivation layer can make those actions more rewarding without introducing unrelated features or cloud services.
+
+### Consequences
+
+- XP is awarded for intentional participation and is never deducted.
+- Levels and milestones are private; Atlas will not add leaderboards, public profiles, or social comparison.
+- Daily Check-ins must be brief and optional, with no pressure-heavy failure state.
+- Reset journeys are explicitly out of scope for this personal V2.
+- The data model should use an auditable event ledger so XP totals and milestones can be recalculated reliably.
+
+---
+
 # Future Decisions
 
 Every significant architectural change should receive a new ADR.

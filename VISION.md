@@ -122,6 +122,14 @@ New capabilities should integrate naturally.
 
 The interface should remain approachable regardless of how much functionality exists beneath it.
 
+## Personal Motivation
+
+Atlas is a personal system, not a programme for a mass audience. Its V2 motivation features should make it easier for the owner to return, reflect, and continue.
+
+Daily Check-ins, XP, levels, and milestones are acceptable when they are quiet, personal, and grounded in meaningful actions already present in Atlas. They should celebrate consistency without making a missed day feel like failure.
+
+Atlas should not introduce public comparison, leaderboards, pressure-heavy streaks, or generic reset journeys.
+
 ---
 
 # The User

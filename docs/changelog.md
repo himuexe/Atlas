@@ -20,3 +20,8 @@
 ### Cleanup
 
 - Removed the unused Dexie prototype, its shared types, and the unused `useLocalStorage` hook.
+
+### Planned
+
+- V2 will introduce Daily Check-ins, private XP, a personal level, milestones, and a calm weekly recap.
+- V2 will not include reset journeys, social comparison, XP loss, or punitive streak mechanics.
