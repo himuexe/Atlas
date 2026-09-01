@@ -24,11 +24,19 @@ function getCurrentStreak(history: string[]): number {
     return 0;
   }
 
+  const today = todayKey();
+  const yesterday = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
+
+  // If neither today nor yesterday is in history, streak is broken
+  if (!sorted.includes(today) && !sorted.includes(yesterday)) {
+    return 0;
+  }
+
+  // Start counting from the most recent date (today or yesterday)
   let streak = 0;
   let cursor = new Date(sorted[sorted.length - 1]);
-  const today = new Date(todayKey());
-
   const normalizedHistory = new Set(sorted);
+
   while (normalizedHistory.has(cursor.toISOString().slice(0, 10))) {
     streak += 1;
     cursor.setDate(cursor.getDate() - 1);

@@ -20,7 +20,7 @@ export function JournalFeature() {
   return (
     <div className="space-y-6">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">Journal</p>
+        <p className="eyebrow">📖 Journal</p>
         <h2 className="page-title mt-4">Capture your daily reflections.</h2>
         <p className="page-copy mt-4">{introText}</p>
       </header>

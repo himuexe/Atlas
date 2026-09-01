@@ -33,7 +33,7 @@ export function SavingsFeature() {
   return (
     <div className="space-y-6">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">Savings</p>
+        <p className="eyebrow">💰 Savings</p>
         <h2 className="page-title mt-4">Track progress with calm, simple numbers.</h2>
         <p className="page-copy mt-4">{summary}</p>
       </header>

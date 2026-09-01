@@ -8,7 +8,7 @@ export function NotesFeature() {
   return (
     <div className="space-y-6">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">Personal notes</p>
+        <p className="eyebrow">📝 Personal notes</p>
         <h2 className="page-title mt-4">Keep a few favorite thoughts close at hand.</h2>
         <p className="page-copy mt-4">
           Notes are for the small reflections, reminders, and lessons that deserve a little space.
@@ -31,7 +31,7 @@ export function NotesFeature() {
 
           {notes.length === 0 ? (
             <div className="rounded-[22px] border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm text-zinc-400">
-              Your notes will appear here in reverse chronological order.
+              Save a thought, reminder, or insight. Your notes will live here for you to revisit.
             </div>
           ) : (
             <div className="space-y-3">

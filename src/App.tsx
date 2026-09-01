@@ -17,6 +17,7 @@ import { StreakProvider } from './features/streaks/StreakContext';
 import { SavingsProvider } from './features/savings/SavingsContext';
 import { GoalsProvider } from './features/goals/GoalsContext';
 import { NotesProvider } from './features/notes/NotesContext';
+import { GamificationProvider } from './features/gamification/GamificationContext';
 
 function App() {
   return (
@@ -29,9 +30,11 @@ function App() {
                 <SavingsProvider>
                   <GoalsProvider>
                     <NotesProvider>
-                      <AppShell>
-                        <AppRoutes />
-                      </AppShell>
+                      <GamificationProvider>
+                        <AppShell>
+                          <AppRoutes />
+                        </AppShell>
+                      </GamificationProvider>
                     </NotesProvider>
                   </GoalsProvider>
                 </SavingsProvider>

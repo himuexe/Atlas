@@ -67,6 +67,37 @@ CREATE TABLE IF NOT EXISTS notes (
   content TEXT NOT NULL,
   createdAt TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS check_ins (
+  id TEXT PRIMARY KEY,
+  date TEXT NOT NULL UNIQUE,
+  mood TEXT NOT NULL,
+  energy TEXT NOT NULL,
+  intention TEXT NOT NULL,
+  win TEXT NOT NULL,
+  reflection TEXT NOT NULL,
+  createdAt TEXT NOT NULL,
+  updatedAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS xp_events (
+  id TEXT PRIMARY KEY,
+  date TEXT NOT NULL,
+  type TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  streakLength INTEGER NOT NULL,
+  description TEXT NOT NULL,
+  createdAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS milestones (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  threshold INTEGER NOT NULL,
+  unlockedAt TEXT,
+  description TEXT NOT NULL,
+  UNIQUE(type, threshold)
+);
 `;
 
 function scheduleSave() {
@@ -377,6 +408,166 @@ export async function removeSettingFromDB(key: string) {
 export async function exportDatabase() {
   await initDatabase();
   return db.export();
+}
+
+// Check-in helpers
+export async function getCheckInFromDB(date: string) {
+  await initDatabase();
+  const rows = queryRows(
+    'SELECT id, date, mood, energy, intention, win, reflection, createdAt, updatedAt FROM check_ins WHERE date = ? LIMIT 1;',
+    [date],
+  );
+  if (rows.length === 0) return null;
+  
+  const row = rows[0] as any;
+  return {
+    id: row.id,
+    date: row.date,
+    mood: row.mood,
+    energy: row.energy,
+    intention: row.intention,
+    win: row.win,
+    reflection: row.reflection,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export async function getAllCheckInsFromDB() {
+  await initDatabase();
+  const rows = queryRows(
+    'SELECT id, date, mood, energy, intention, win, reflection, createdAt, updatedAt FROM check_ins ORDER BY date DESC;',
+  );
+  return rows.map((r: any) => ({
+    id: r.id,
+    date: r.date,
+    mood: r.mood,
+    energy: r.energy,
+    intention: r.intention,
+    win: r.win,
+    reflection: r.reflection,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  }));
+}
+
+export async function addCheckInToDB(checkIn: {
+  id: string;
+  date: string;
+  mood: string;
+  energy: string;
+  intention: string;
+  win: string;
+  reflection: string;
+  createdAt: string;
+  updatedAt: string;
+}) {
+  await initDatabase();
+  execAll(
+    'INSERT OR REPLACE INTO check_ins (id, date, mood, energy, intention, win, reflection, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);',
+    [checkIn.id, checkIn.date, checkIn.mood, checkIn.energy, checkIn.intention, checkIn.win, checkIn.reflection, checkIn.createdAt, checkIn.updatedAt],
+  );
+  scheduleSave();
+}
+
+export async function removeCheckInFromDB(date: string) {
+  await initDatabase();
+  execAll('DELETE FROM check_ins WHERE date = ?;', [date]);
+  scheduleSave();
+}
+
+export async function clearCheckIns() {
+  await initDatabase();
+  execAll('DELETE FROM check_ins;');
+  scheduleSave();
+}
+
+// XP Event helpers
+export async function getXPEventsFromDB() {
+  await initDatabase();
+  const rows = queryRows(
+    'SELECT id, date, type, amount, streakLength, description, createdAt FROM xp_events ORDER BY createdAt DESC;',
+  );
+  return rows.map((r: any) => ({
+    id: r.id,
+    date: r.date,
+    type: r.type,
+    amount: Number(r.amount),
+    streakLength: Number(r.streakLength),
+    description: r.description,
+    createdAt: r.createdAt,
+  }));
+}
+
+export async function addXPEventToDB(event: {
+  id: string;
+  date: string;
+  type: string;
+  amount: number;
+  streakLength: number;
+  description: string;
+  createdAt: string;
+}) {
+  await initDatabase();
+  execAll(
+    'INSERT OR REPLACE INTO xp_events (id, date, type, amount, streakLength, description, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?);',
+    [event.id, event.date, event.type, event.amount, event.streakLength, event.description, event.createdAt],
+  );
+  scheduleSave();
+}
+
+export async function clearXPEvents() {
+  await initDatabase();
+  execAll('DELETE FROM xp_events;');
+  scheduleSave();
+}
+
+// Milestone helpers
+export async function getMilestonesFromDB() {
+  await initDatabase();
+  const rows = queryRows('SELECT id, type, threshold, unlockedAt, description FROM milestones ORDER BY threshold ASC;');
+  return rows.map((r: any) => ({
+    id: r.id,
+    type: r.type,
+    threshold: Number(r.threshold),
+    unlockedAt: r.unlockedAt ?? null,
+    description: r.description,
+  }));
+}
+
+export async function initializeMilestonesInDB() {
+  await initDatabase();
+  
+  // Initialize check-in streak milestones (10, 20, 30, 40, 50 days)
+  const milestones = [10, 20, 30, 40, 50];
+  
+  for (const threshold of milestones) {
+    const existingRows = queryRows('SELECT id FROM milestones WHERE type = ? AND threshold = ?;', ['check-in-streak', threshold]);
+    
+    if (existingRows.length === 0) {
+      const id = `milestone-checkin-${threshold}`;
+      const description = `${threshold}-day check-in streak`;
+      execAll(
+        'INSERT OR REPLACE INTO milestones (id, type, threshold, unlockedAt, description) VALUES (?, ?, ?, ?, ?);',
+        [id, 'check-in-streak', threshold, null, description],
+      );
+    }
+  }
+  
+  scheduleSave();
+}
+
+export async function unlockMilestoneInDB(type: string, threshold: number) {
+  await initDatabase();
+  const now = new Date().toISOString();
+  execAll('UPDATE milestones SET unlockedAt = ? WHERE type = ? AND threshold = ?;', [now, type, threshold]);
+  scheduleSave();
+}
+
+export async function clearMilestones() {
+  await initDatabase();
+  execAll('DELETE FROM milestones;');
+  scheduleSave();
 }
 
 export async function importDatabase(buffer: Uint8Array | ArrayBuffer) {

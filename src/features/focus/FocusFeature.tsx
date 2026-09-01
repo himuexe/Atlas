@@ -8,7 +8,7 @@ export function FocusFeature() {
   return (
     <div className="space-y-6">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">Today's Focus</p>
+        <p className="eyebrow">🎯 Today's Focus</p>
         <h2 className="page-title mt-4">Capture your top priorities for today.</h2>
         <p className="page-copy mt-4">
           Keep your day centered on a small set of meaningful actions. Mark tasks complete as you make progress.
@@ -38,7 +38,7 @@ export function FocusFeature() {
 
             {items.length === 0 ? (
               <div className="mt-6 rounded-[22px] border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm text-zinc-400">
-                Add your first focus item to begin.
+                Start with your most important priority for today. A clear focus beats a crowded list.
               </div>
             ) : (
               <ul className="mt-6 space-y-3">

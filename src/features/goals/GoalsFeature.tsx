@@ -8,7 +8,7 @@ export function GoalsFeature() {
   return (
     <div className="space-y-6">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">Goal tracking</p>
+        <p className="eyebrow">🏆 Goal tracking</p>
         <h2 className="page-title mt-4">Keep a few gentle commitments visible.</h2>
         <p className="page-copy mt-4">
           Goals should feel calm and helpful. Keep them small enough to follow through.
@@ -29,7 +29,7 @@ export function GoalsFeature() {
 
           {goals.length === 0 ? (
             <div className="rounded-[22px] border border-dashed border-white/10 bg-white/[0.03] p-6 text-sm text-zinc-400">
-              Add a small goal to give your week a little direction.
+              Set one small goal to guide your week. Keep it simple enough to actually achieve.
             </div>
           ) : (
             <div className="space-y-3">

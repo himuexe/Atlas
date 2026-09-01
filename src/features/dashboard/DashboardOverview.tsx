@@ -4,6 +4,10 @@ import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
 import { useStreaksContext } from '../streaks/StreakContext';
+import { CheckInCard } from '../gamification/CheckInCard';
+import { PersonalLevel } from '../gamification/PersonalLevel';
+import { MilestonesDisplay } from '../gamification/MilestonesDisplay';
+import { WeeklyRecap } from '../gamification/WeeklyRecap';
 
 export function DashboardOverview() {
   const { items, completedCount } = useFocus();
@@ -57,6 +61,27 @@ export function DashboardOverview() {
           <p className="max-w-sm text-sm leading-6 text-zinc-500 lg:text-right">{dailyPrompt}</p>
         </div>
       </header>
+
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="eyebrow">Your day starts here</p>
+            <h3 className="mt-2 text-xl font-semibold tracking-[-0.035em] text-white">Daily check-in & progress.</h3>
+          </div>
+        </div>
+
+        {/* Check-in Card */}
+        <CheckInCard />
+
+        {/* Personal Level and Milestones */}
+        <div className="grid gap-6 xl:grid-cols-2">
+          <PersonalLevel />
+          <MilestonesDisplay />
+        </div>
+
+        {/* Weekly Recap */}
+        <WeeklyRecap />
+      </section>
 
       <section className="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 lg:grid-cols-[1.45fr_0.85fr]">
         <div className="bg-[#080808] p-6 sm:p-8">

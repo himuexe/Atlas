@@ -1,6 +1,6 @@
 import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { SectionCard } from '../../components/ui/SectionCard';
-import { exportDatabase, importDatabase } from '../../lib/persistence/sqlite';
+import { exportDatabase, importDatabase, clearCheckIns, clearXPEvents, clearMilestones } from '../../lib/persistence/sqlite';
 import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
@@ -9,6 +9,7 @@ import { useStreaksContext } from '../streaks/StreakContext';
 import { useSavingsContext } from '../savings/SavingsContext';
 import { useGoalsContext } from '../goals/GoalsContext';
 import { useNotesContext } from '../notes/NotesContext';
+import { useGamificationContext } from '../gamification/GamificationContext';
 
 const startupOptions = [
   { label: 'Dashboard', value: '/dashboard' as const },
@@ -31,6 +32,7 @@ export function SettingsFeature() {
   const { entries: savingsEntries, reset: resetSavings } = useSavingsContext();
   const { goals, reset: resetGoals } = useGoalsContext();
   const { notes, reset: resetNotes } = useNotesContext();
+  const { level, currentCheckInStreak, allCheckIns } = useGamificationContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -44,7 +46,7 @@ export function SettingsFeature() {
 
   const resetAllData = () => {
     const confirmed = window.confirm(
-      'Resetting app data will clear every entry, note, goal, habit, preference, and saved progress. This cannot be undone.',
+      'Resetting app data will clear every entry, note, goal, habit, preference, level, XP, check-in, and saved progress. This cannot be undone.',
     );
     if (!confirmed) {
       return;
@@ -58,6 +60,12 @@ export function SettingsFeature() {
     resetGoals();
     resetNotes();
     resetSettings();
+    
+    // Reset gamification data
+    void Promise.all([clearCheckIns(), clearXPEvents(), clearMilestones()]).catch((err) => 
+      console.error('Failed to reset gamification data', err)
+    );
+    
     setStatusMessage('All local data has been cleared.');
   };
 
@@ -110,7 +118,7 @@ export function SettingsFeature() {
   return (
     <div className="space-y-6">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">Settings</p>
+        <p className="eyebrow">⚙️ Settings</p>
         <h2 className="page-title mt-4">Customize how Atlas opens and manages your data.</h2>
         <p className="page-copy mt-4">
           Settings let you control where the app opens first and reset your current progress when you want a fresh start.
@@ -186,6 +194,18 @@ export function SettingsFeature() {
             <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
               <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Notes</p>
               <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{notes.length}</p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Check-ins</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{allCheckIns.length}</p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Current streak</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white">🔥 {currentCheckInStreak}</p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Atlas level</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-white">{level.level}</p>
             </div>
           </div>
 
