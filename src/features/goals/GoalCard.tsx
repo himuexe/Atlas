@@ -1,5 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { GoalMilestone, GoalWithMilestones } from './types';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { listItemTransition, listItemVariants } from '../../components/ui/motionPresets';
 
 interface GoalCardProps {
   goal: GoalWithMilestones;
@@ -12,6 +14,7 @@ interface GoalCardProps {
 }
 
 export function GoalCard({ goal, onToggle, onRemove, onAddMilestone, onToggleMilestone, onRemoveMilestone, onMoveMilestone }: GoalCardProps) {
+  const reducedMotion = useReducedMotion();
   const [isAddingMilestone, setIsAddingMilestone] = useState(false);
   const [milestoneTitle, setMilestoneTitle] = useState('');
   const milestones = [...goal.milestones].sort((a, b) => a.position - b.position);
@@ -26,7 +29,15 @@ export function GoalCard({ goal, onToggle, onRemove, onAddMilestone, onToggleMil
   };
 
   return (
-    <article className="rounded-[22px] border border-white/10 bg-[#060606]/90 px-4 py-4 sm:px-5">
+    <motion.article
+      layout={reducedMotion === false}
+      variants={listItemVariants}
+      initial={reducedMotion !== false ? false : 'initial'}
+      animate="enter"
+      exit="exit"
+      transition={listItemTransition(reducedMotion)}
+      className="rounded-[22px] border border-white/10 bg-[#060606]/90 px-4 py-4 sm:px-5"
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <p className="text-[10px] uppercase tracking-[0.28em] text-zinc-500">Outcome</p>
@@ -72,17 +83,19 @@ export function GoalCard({ goal, onToggle, onRemove, onAddMilestone, onToggleMil
 
         {milestones.length > 0 ? (
           <ol aria-label={`Ordered milestones for outcome: ${goal.title}`} className="mt-4 space-y-0">
-            {milestones.map((milestone, index) => (
-              <MilestoneRow
-                key={milestone.id}
-                milestone={milestone}
-                index={index}
-                total={milestones.length}
-                onToggle={() => onToggleMilestone(goal.id, milestone.id)}
-                onRemove={() => onRemoveMilestone(goal.id, milestone.id)}
-                onMove={(direction) => onMoveMilestone(goal.id, milestone.id, direction)}
-              />
-            ))}
+            <AnimatePresence initial={false}>
+              {milestones.map((milestone, index) => (
+                <MilestoneRow
+                  key={milestone.id}
+                  milestone={milestone}
+                  index={index}
+                  total={milestones.length}
+                  onToggle={() => onToggleMilestone(goal.id, milestone.id)}
+                  onRemove={() => onRemoveMilestone(goal.id, milestone.id)}
+                  onMove={(direction) => onMoveMilestone(goal.id, milestone.id, direction)}
+                />
+              ))}
+            </AnimatePresence>
           </ol>
         ) : (
           <p className="mt-4 text-sm text-zinc-500">No milestones yet. The outcome can stand on its own.</p>
@@ -110,7 +123,7 @@ export function GoalCard({ goal, onToggle, onRemove, onAddMilestone, onToggleMil
           </form>
         )}
       </section>
-    </article>
+    </motion.article>
   );
 }
 
@@ -129,12 +142,22 @@ function MilestoneRow({
   onRemove: () => void;
   onMove: (direction: -1 | 1) => void;
 }) {
+  const reducedMotion = useReducedMotion();
   const status = milestone.completed ? 'Completed' : 'Not completed';
 
   return (
-    <li aria-label={`${milestone.title}: ${status}`} className="relative flex items-center gap-3 py-2.5 pl-1">
-      {index < total - 1 && <span aria-hidden="true" className="absolute bottom-[-0.6rem] left-[0.7rem] top-7 w-px bg-white/15" />}
-      <span aria-hidden="true" className={`z-10 grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[10px] ${milestone.completed ? 'border-white bg-white text-black' : 'border-white/25 bg-[#060606] text-zinc-500'}`}>
+    <motion.li
+      layout={reducedMotion === false}
+      variants={listItemVariants}
+      initial={reducedMotion !== false ? false : 'initial'}
+      animate="enter"
+      exit="exit"
+      transition={listItemTransition(reducedMotion)}
+      aria-label={`${milestone.title}: ${status}`}
+      className="goal-milestone-row relative flex items-center gap-3 py-2.5 pl-1"
+    >
+      {index < total - 1 && <span aria-hidden="true" className={`goal-milestone-connector absolute bottom-[-0.6rem] left-[0.7rem] top-7 ${milestone.completed ? 'is-complete' : ''}`} />}
+      <span aria-hidden="true" className={`goal-milestone-node z-10 grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[10px] ${milestone.completed ? 'border-white bg-white text-black' : 'border-white/25 bg-[#060606] text-zinc-500'}`}>
         {milestone.completed ? '✓' : index + 1}
       </span>
       <div className="min-w-0 flex-1">
@@ -149,6 +172,6 @@ function MilestoneRow({
         </button>
         <button type="button" onClick={onRemove} aria-label={`Remove milestone: ${milestone.title}`} className="rounded-lg px-2 py-1 text-xs text-zinc-500 hover:text-white">×</button>
       </div>
-    </li>
+    </motion.li>
   );
 }

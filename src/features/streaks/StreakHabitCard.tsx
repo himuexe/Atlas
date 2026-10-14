@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { StreakHabit } from './types';
-import { getLastSevenDayStatuses } from './utils';
+import { getLastSevenDayStatuses, getLocalDateKey } from './utils';
+import { motion, useReducedMotion } from 'motion/react';
+import { listItemTransition, listItemVariants } from '../../components/ui/motionPresets';
 
 interface StreakHabitCardProps {
   habit: StreakHabit & { currentStreak: number; bestStreak: number; completedToday: boolean; todayIsRestDay: boolean };
@@ -20,9 +22,11 @@ const weekdays = [
 ];
 
 export function StreakHabitCard({ habit, onToggleToday, onUpdateRestDays, onRemove }: StreakHabitCardProps) {
+  const reducedMotion = useReducedMotion();
   const [isEditingSchedule, setIsEditingSchedule] = useState(false);
   const [draftRestDays, setDraftRestDays] = useState(habit.restDays);
   const last7Days = getLastSevenDayStatuses(habit.history, habit.restDays);
+  const today = getLocalDateKey(new Date());
 
   const toggleRestDay = (day: number) => {
     setDraftRestDays((current) => current.includes(day)
@@ -41,24 +45,32 @@ export function StreakHabitCard({ habit, onToggleToday, onUpdateRestDays, onRemo
   };
   
   return (
-    <article className="rounded-[22px] border border-white/10 bg-[#060606]/90 p-5">
+    <motion.article
+      layout={reducedMotion === false}
+      variants={listItemVariants}
+      initial={reducedMotion !== false ? false : 'initial'}
+      animate="enter"
+      exit="exit"
+      transition={listItemTransition(reducedMotion)}
+      className="streak-habit-card rounded-[22px] border border-white/10 bg-[#060606]/90 p-5"
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h3 className="text-lg font-semibold text-white">{habit.name}</h3>
           
-          <ol aria-label={`Last seven days for ${habit.name}`} className="mt-5 grid grid-cols-7 gap-2">
+          <ol aria-label={`Last seven days for ${habit.name}`} className="streak-week-grid mt-5 grid grid-cols-7">
             {last7Days.map(({ date, weekday, status }) => {
               const colors = {
-                completed: 'border-white/40 bg-white text-black',
-                incomplete: 'border-white/10 bg-white/[0.03] text-zinc-400',
-                rest: 'border-dashed border-white/20 bg-transparent text-zinc-500',
+                completed: 'streak-day--completed',
+                incomplete: 'streak-day--incomplete',
+                rest: 'streak-day--rest',
               };
               const statusText = status === 'completed' ? 'Completed' : status === 'rest' ? 'Rest day' : 'Incomplete';
               return (
-                <li key={date} aria-label={`${weekday}, ${date}: ${statusText}`} className={`min-w-0 list-none rounded-xl border px-1 py-2 text-center ${colors[status]}`}>
+                <li key={date} aria-label={`${weekday}, ${date}: ${statusText}`} aria-current={date === today ? 'date' : undefined} className={`streak-day min-w-0 list-none border text-center ${colors[status]}`}>
                   <span className="block text-[10px] font-semibold uppercase tracking-wide">{weekday}</span>
-                  <span className="mt-1 block text-[10px]" aria-hidden="true">
-                    {status === 'completed' ? '✓' : status === 'rest' ? '—' : '·'}
+                  <span className={`streak-day__mark streak-day__mark--${status}`} aria-hidden="true">
+                    {status === 'completed' ? '✓' : status === 'rest' ? '—' : '○'}
                   </span>
                 </li>
               );
@@ -66,7 +78,7 @@ export function StreakHabitCard({ habit, onToggleToday, onUpdateRestDays, onRemo
           </ol>
           <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zinc-500" aria-label="Weekly status legend">
             <li><span className="mr-1 text-white" aria-hidden="true">✓</span>Completed</li>
-            <li><span className="mr-1 text-zinc-500" aria-hidden="true">·</span>Incomplete</li>
+            <li><span className="mr-1 text-zinc-500" aria-hidden="true">○</span>Incomplete</li>
             <li><span className="mr-1 text-zinc-500" aria-hidden="true">—</span>Scheduled rest</li>
           </ul>
 
@@ -143,6 +155,6 @@ export function StreakHabitCard({ habit, onToggleToday, onUpdateRestDays, onRemo
           </button>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

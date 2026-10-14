@@ -1,13 +1,14 @@
 import { StreakInputForm } from './StreakInputForm';
 import { StreakHabitCard } from './StreakHabitCard';
 import { useStreaksContext } from './StreakContext';
+import { AnimatePresence } from 'motion/react';
 
 export function StreaksFeature() {
   const { habits, addHabit, updateRestDays, toggleToday, removeHabit, totalHabits, completedToday, scheduledToday, bestStreak } = useStreaksContext();
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="streaks-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">🔥 Streaks</p>
         <h2 className="page-title mt-4">Track your consistency.</h2>
         <p className="page-copy mt-4">
@@ -50,15 +51,17 @@ export function StreaksFeature() {
               </div>
             ) : (
               <div className="space-y-4">
-                {habits.map((habit) => (
-                  <StreakHabitCard
-                    key={habit.id}
-                    habit={habit}
-                    onToggleToday={toggleToday}
-                    onUpdateRestDays={updateRestDays}
-                    onRemove={removeHabit}
-                  />
-                ))}
+                <AnimatePresence initial={false}>
+                  {habits.map((habit) => (
+                    <StreakHabitCard
+                      key={habit.id}
+                      habit={habit}
+                      onToggleToday={toggleToday}
+                      onUpdateRestDays={updateRestDays}
+                      onRemove={removeHabit}
+                    />
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>

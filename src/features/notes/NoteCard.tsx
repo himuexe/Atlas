@@ -1,4 +1,6 @@
 import { FormEvent, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
+import { listItemTransition, listItemVariants } from '../../components/ui/motionPresets';
 
 interface NoteCardProps {
   note: {
@@ -12,6 +14,7 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, onUpdate, onRemove }: NoteCardProps) {
+  const reducedMotion = useReducedMotion();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
@@ -30,7 +33,15 @@ export function NoteCard({ note, onUpdate, onRemove }: NoteCardProps) {
   };
 
   return (
-    <div className="rounded-[22px] border border-white/10 bg-[#060606]/90 px-4 py-4">
+    <motion.div
+      layout={reducedMotion === false}
+      variants={listItemVariants}
+      initial={reducedMotion !== false ? false : 'initial'}
+      animate="enter"
+      exit="exit"
+      transition={listItemTransition(reducedMotion)}
+      className="rounded-[22px] border border-white/10 bg-[#060606]/90 px-4 py-4"
+    >
       {isEditing ? (
         <form onSubmit={saveEditing} className="space-y-3">
           <label className="block text-sm text-zinc-300">
@@ -85,6 +96,6 @@ export function NoteCard({ note, onUpdate, onRemove }: NoteCardProps) {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

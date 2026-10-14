@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { DashboardPage } from './pages/DashboardPage';
 import { FocusPage } from './pages/FocusPage';
@@ -19,6 +19,8 @@ import { GoalsProvider } from './features/goals/GoalsContext';
 import { NotesProvider } from './features/notes/NotesContext';
 import { GamificationProvider } from './features/gamification/GamificationContext';
 import { VisitStreakProvider } from './features/visits/VisitStreakContext';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { pageTransition, pageTransitionVariants } from './components/ui/motionPresets';
 
 function App() {
   return (
@@ -52,21 +54,34 @@ function App() {
 
 function AppRoutes() {
   const { startupPage } = useSettingsContext();
+  const location = useLocation();
+  const reducedMotion = useReducedMotion();
 
   return (
-    <Routes>
-      <Route path="/" element={<Navigate replace to={startupPage} />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/focus" element={<FocusPage />} />
-      <Route path="/health" element={<HealthPage />} />
-      <Route path="/journal" element={<JournalPage />} />
-      <Route path="/streaks" element={<StreaksPage />} />
-      <Route path="/savings" element={<SavingsPage />} />
-      <Route path="/goals" element={<GoalsPage />} />
-      <Route path="/notes" element={<NotesPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
-      <Route path="*" element={<Navigate replace to={startupPage} />} />
-    </Routes>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        variants={pageTransitionVariants}
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        transition={pageTransition(reducedMotion)}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Navigate replace to={startupPage} />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/focus" element={<FocusPage />} />
+          <Route path="/health" element={<HealthPage />} />
+          <Route path="/journal" element={<JournalPage />} />
+          <Route path="/streaks" element={<StreaksPage />} />
+          <Route path="/savings" element={<SavingsPage />} />
+          <Route path="/goals" element={<GoalsPage />} />
+          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<Navigate replace to={startupPage} />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

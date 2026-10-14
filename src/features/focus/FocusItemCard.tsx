@@ -1,4 +1,6 @@
 import { FocusItem } from './types';
+import { motion, useReducedMotion } from 'motion/react';
+import { listItemTransition, listItemVariants } from '../../components/ui/motionPresets';
 
 interface FocusItemCardProps {
   item: FocusItem;
@@ -7,8 +9,18 @@ interface FocusItemCardProps {
 }
 
 export function FocusItemCard({ item, onToggle, onRemove }: FocusItemCardProps) {
+  const reducedMotion = useReducedMotion();
+
   return (
-    <li className="rounded-[22px] border border-white/10 bg-[#060606]/90 p-4">
+    <motion.li
+      layout={reducedMotion === false}
+      variants={listItemVariants}
+      initial={reducedMotion !== false ? false : 'initial'}
+      animate="enter"
+      exit="exit"
+      transition={listItemTransition(reducedMotion)}
+      className="rounded-[22px] border border-white/10 bg-[#060606]/90 p-4"
+    >
       <div className="flex items-start justify-between gap-4">
         <label className="flex-1 cursor-pointer">
           <div className="flex items-center gap-3">
@@ -35,6 +47,6 @@ export function FocusItemCard({ item, onToggle, onRemove }: FocusItemCardProps) 
           Remove
         </button>
       </div>
-    </li>
+    </motion.li>
   );
 }

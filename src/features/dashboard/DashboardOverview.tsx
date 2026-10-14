@@ -5,6 +5,7 @@ import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
 import { useStreaksContext } from '../streaks/StreakContext';
 import { useVisitStreakContext } from '../visits/VisitStreakContext';
+import { DashboardAtmosphere } from '../../components/ui/DashboardAtmosphere';
 
 export function DashboardOverview() {
   const { items, completedCount } = useFocus();
@@ -48,8 +49,10 @@ export function DashboardOverview() {
           : 'w-2/3';
 
   return (
-    <div className="mx-auto max-w-6xl space-y-12">
-      <header className="border-b border-white/10 pb-8">
+    <div className="dashboard-page">
+      <DashboardAtmosphere />
+      <div className="dashboard-content mx-auto max-w-6xl space-y-12">
+      <header className="dashboard-heading border-b border-white/10 pb-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p className="eyebrow">{todayLabel}</p>
           <p className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">
@@ -65,8 +68,8 @@ export function DashboardOverview() {
         </div>
       </header>
 
-      <section className="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 lg:grid-cols-[1.45fr_0.85fr]">
-        <div className="bg-raised p-6 sm:p-8">
+      <section className="dashboard-focus-panel relative grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-[0_28px_70px_rgb(0_0_0/0.28)] backdrop-blur-[2px] lg:grid-cols-[1.45fr_0.85fr]">
+        <div className="bg-raised/95 p-6 sm:p-8">
           <div className="flex items-start justify-between gap-6">
             <div>
               <p className="eyebrow">Today’s focus</p>
@@ -75,11 +78,11 @@ export function DashboardOverview() {
             <span className="rounded-md border border-white/10 px-2.5 py-1 text-xs text-zinc-400">{completedCount}/{items.length}</span>
           </div>
           <div className="mt-10 h-px bg-white/10">
-            <div className={`h-px bg-white ${focusProgressClass}`} />
+            <div className={`h-px bg-signal shadow-[0_0_10px_rgb(var(--rgb-signal)/0.4)] transition-all duration-500 ${focusProgressClass}`} />
           </div>
           <p className="mt-3 text-xs text-zinc-500">{items.length === 0 ? 'No priorities selected' : `${items.length - completedCount} remaining`}</p>
         </div>
-        <div className="bg-raised p-6 sm:p-8">
+        <div className="bg-raised/90 p-6 sm:p-8">
           <p className="eyebrow">Daily rhythm</p>
           <dl className="mt-6 space-y-5">
             <div className="flex items-baseline justify-between border-b border-white/10 pb-4">
@@ -113,6 +116,7 @@ export function DashboardOverview() {
           <DashboardCard title="Streaks" description={totalHabits === 0 ? 'Choose a habit and let consistency build quietly.' : `${completedToday}/${totalHabits} complete today · best streak ${bestStreak}`} to="/streaks" actionLabel="View" />
         </div>
       </section>
+      </div>
     </div>
   );
 }

@@ -42,9 +42,11 @@
   --radius-control: 0.5rem;
   --radius-card: 0.75rem;
   --radius-panel: 1rem;
-  --shadow-surface: 0 12px 32px rgb(0 0 0 / 18%);
+  --shadow-surface: 0 18px 44px rgb(0 0 0 / 22%), 0 1px 0 rgb(255 255 255 / 2%) inset;
+  --shadow-surface-hover: 0 22px 52px rgb(0 0 0 / 30%), 0 0 24px rgb(var(--rgb-signal) / 4%);
   --shadow-focus: 0 0 0 3px var(--color-signal-glow);
   --transition-fast: 140ms;
   --transition-standard: 200ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --edge-metal: linear-gradient(125deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 34%, rgb(var(--rgb-signal) / 8%));
 }

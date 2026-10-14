@@ -1,6 +1,6 @@
 # Atlas Architecture
 
-Last verified: 2026-10-14
+Last verified: 2026-10-15
 
 ## Overview
 
@@ -22,6 +22,12 @@ BrowserRouter
 - `settings`: startup preference and backup import/export through the SQLite database
 
 Shared layout belongs in `src/components/layout`, generic cards in `src/components/ui`, routes in `src/pages`, and shared browser-persistence code in `src/lib/persistence`.
+
+## Visual interaction layer
+
+`motion` provides short, shared route and list transitions; it does not own application state or change feature behavior. Reduced-motion preferences are handled by both Motion settings and CSS. On narrow viewports, the shell exposes the same route links in a horizontally scrollable navigation row.
+
+The Dashboard's decorative scene is isolated in `components/ui/DashboardAtmosphere.tsx` and `components/ui/DashboardScene.ts`. The scene module is loaded only on the Dashboard and imports only the Three.js primitives it uses. Its canvas is decorative and pointer-transparent; all content remains semantic DOM. Rendering is capped at 30 FPS, pauses when the tab is hidden or scene is offscreen, and stops for reduced motion. A static CSS atmosphere remains when WebGL or the scene chunk is unavailable. Scene resources and observers are disposed on unmount. No feature data, persistence, or business logic is owned by this visual layer.
 
 ## Persistence model
 

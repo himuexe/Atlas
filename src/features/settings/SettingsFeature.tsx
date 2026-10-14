@@ -119,8 +119,8 @@ export function SettingsFeature() {
   };
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="settings-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">⚙️ Settings</p>
         <h2 className="page-title mt-4">Customize how Atlas opens and manages your data.</h2>
         <p className="page-copy mt-4">

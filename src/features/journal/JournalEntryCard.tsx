@@ -1,4 +1,6 @@
 import { JournalEntry } from './types';
+import { motion, useReducedMotion } from 'motion/react';
+import { listItemTransition, listItemVariants } from '../../components/ui/motionPresets';
 
 interface JournalEntryCardProps {
   entry: JournalEntry;
@@ -6,6 +8,7 @@ interface JournalEntryCardProps {
 }
 
 export function JournalEntryCard({ entry, onDelete }: JournalEntryCardProps) {
+  const reducedMotion = useReducedMotion();
   const date = new Date(entry.createdAt).toLocaleString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -15,7 +18,15 @@ export function JournalEntryCard({ entry, onDelete }: JournalEntryCardProps) {
   });
 
   return (
-    <article className="rounded-[22px] border border-white/10 bg-[#060606]/90 p-5">
+    <motion.article
+      layout={reducedMotion === false}
+      variants={listItemVariants}
+      initial={reducedMotion !== false ? false : 'initial'}
+      animate="enter"
+      exit="exit"
+      transition={listItemTransition(reducedMotion)}
+      className="rounded-[22px] border border-white/10 bg-[#060606]/90 p-5"
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-zinc-200">{date}</p>
@@ -35,6 +46,6 @@ export function JournalEntryCard({ entry, onDelete }: JournalEntryCardProps) {
           Delete
         </button>
       </div>
-    </article>
+    </motion.article>
   );
 }

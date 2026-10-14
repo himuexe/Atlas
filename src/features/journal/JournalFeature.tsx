@@ -3,6 +3,7 @@ import { JournalInputForm } from './JournalInputForm';
 import { JournalEntryCard } from './JournalEntryCard';
 import { useJournalContext } from './JournalContext';
 import { summarizeJournalEntries } from './utils';
+import { AnimatePresence } from 'motion/react';
 
 export function JournalFeature() {
   const { filteredEntries, query, setQuery, addEntry, removeEntry, entries, latestEntry } = useJournalContext();
@@ -18,14 +19,14 @@ export function JournalFeature() {
   }, [entries.length, summary.totalEntries]);
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="journal-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">📖 Journal</p>
         <h2 className="page-title mt-4">Capture your daily reflections.</h2>
         <p className="page-copy mt-4">{introText}</p>
       </header>
 
-      <div className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
+      <div className="journal-prompt rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
         <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Reflection prompt</p>
         <p className="mt-3 text-sm leading-6 text-zinc-300">
           What felt meaningful today, and what would you want to remember tomorrow?
@@ -77,9 +78,11 @@ export function JournalFeature() {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredEntries.map((entry) => (
-                  <JournalEntryCard key={entry.id} entry={entry} onDelete={removeEntry} />
-                ))}
+                <AnimatePresence initial={false}>
+                  {filteredEntries.map((entry) => (
+                    <JournalEntryCard key={entry.id} entry={entry} onDelete={removeEntry} />
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>

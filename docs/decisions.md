@@ -254,6 +254,30 @@ See [the full ADR](adr-009-gamification-deferred.md).
 
 ---
 
+# ADR-010
+
+## Decorative motion and Dashboard scene
+
+**Status:** Accepted
+
+### Decision
+
+Use the existing React and CSS architecture with `motion` for brief, reduced-motion-aware navigation and list transitions. Use Three.js only for an isolated, lazy-loaded, decorative Dashboard atmosphere. Keep the Goals path in SVG/CSS and all data, controls, and writing surfaces in semantic DOM.
+
+### Context
+
+The visual refresh benefits from subtle motion and genuine spatial depth, but Atlas remains a calm, local-first personal system. A full-screen renderer, a new state-management layer, or effects on every page would add cost without serving the page's purpose.
+
+### Consequences
+
+- Motion and Three.js add runtime bundle weight, so the Three.js scene is a dynamic, feature-local import and uses only the renderer primitives required by the scene.
+- The Savings category uses a small listbox-backed custom select because the native popup rendered with browser-default white/blue styling; its selection state remains the existing feature-local React state.
+- The ambient scene targets a maximum of 30 FPS, pauses when hidden/offscreen, observes reduced-motion preferences, disposes resources on unmount, and has a CSS fallback.
+- Motion changes presentation only; it does not alter routes, data flow, persistence, feature logic, or product scope.
+- Text-heavy pages remain still, and no deferred ADR-009 gamification concepts are introduced.
+
+---
+
 # Future Decisions
 
 Every significant architectural change should receive a new ADR.

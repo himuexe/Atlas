@@ -1,8 +1,18 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { useSavingsContext } from './SavingsContext';
 import { getSignedAmount } from './utils';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { listItemTransition, listItemVariants } from '../../components/ui/motionPresets';
+import { DarkSelect } from '../../components/ui/DarkSelect';
+
+const categoryOptions = [
+  { label: 'Income', value: 'income' },
+  { label: 'Expense', value: 'expense' },
+  { label: 'Savings', value: 'savings' },
+] as const;
 
 export function SavingsFeature() {
+  const reducedMotion = useReducedMotion();
   const { entries, addEntry, removeEntry, balance } = useSavingsContext();
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -32,19 +42,19 @@ export function SavingsFeature() {
   }, [balance, entries]);
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="savings-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">💰 Savings</p>
         <h2 className="page-title mt-4">Track progress with calm, simple numbers.</h2>
         <p className="page-copy mt-4">{summary}</p>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
+        <section className="savings-balance rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Balance</p>
-              <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">₹{balance.toFixed(2)}</h3>
+              <h3 className="savings-balance__value mt-2 text-2xl font-semibold tracking-tight text-white">₹{balance.toFixed(2)}</h3>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-zinc-300">
               {entries.length} entries
@@ -57,31 +67,42 @@ export function SavingsFeature() {
                 Add your first savings entry to begin tracking progress.
               </div>
             ) : (
-              entries.map((entry) => {
-                const signedAmount = getSignedAmount(entry);
-                return (
-                  <div key={entry.id} className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-4">
-                    <div>
-                      <p className="text-sm font-semibold text-white">{entry.description}</p>
-                      <p className="mt-1 text-[11px] uppercase tracking-[0.32em] text-zinc-500">
-                        {new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-sm font-semibold ${signedAmount >= 0 ? 'text-zinc-200' : 'text-zinc-400'}`}>
-                        {signedAmount >= 0 ? '+' : ''}₹{Math.abs(signedAmount).toFixed(2)}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeEntry(entry.id)}
-                        className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-zinc-400"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
+              <AnimatePresence initial={false}>
+                {entries.map((entry) => {
+                  const signedAmount = getSignedAmount(entry);
+                  return (
+                    <motion.div
+                      key={entry.id}
+                      layout={reducedMotion === false}
+                      variants={listItemVariants}
+                      initial={reducedMotion !== false ? false : 'initial'}
+                      animate="enter"
+                      exit="exit"
+                      transition={listItemTransition(reducedMotion)}
+                      className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-4"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-white">{entry.description}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.32em] text-zinc-500">
+                          {new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-sm font-semibold ${signedAmount >= 0 ? 'text-zinc-200' : 'text-zinc-400'}`}>
+                          {signedAmount >= 0 ? '+' : ''}₹{Math.abs(signedAmount).toFixed(2)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeEntry(entry.id)}
+                          className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-zinc-400"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             )}
           </div>
         </section>
@@ -117,16 +138,13 @@ export function SavingsFeature() {
           </label>
 
           <label className="block text-sm text-zinc-300">
-            Category
-            <select
+            <span id="savings-category-label">Category</span>
+            <DarkSelect
               value={category}
-              onChange={(event) => setCategory(event.target.value as 'income' | 'expense' | 'savings')}
-              className="mt-2 w-full rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/10"
-            >
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-              <option value="savings">Savings</option>
-            </select>
+              options={categoryOptions}
+              onChange={setCategory}
+              labelledBy="savings-category-label"
+            />
           </label>
 
           <button

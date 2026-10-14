@@ -12,8 +12,8 @@ export function HealthFeature() {
   const { health, updateMetric, filledMetricsCount, lastUpdated } = useHealth();
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="health-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">❤️ Health Snapshot</p>
         <h2 className="page-title mt-4">See your wellbeing at a glance.</h2>
         <p className="page-copy mt-4">

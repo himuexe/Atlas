@@ -1,13 +1,14 @@
 import { useFocus } from './FocusContext';
 import { FocusInputForm } from './FocusInputForm';
 import { FocusItemCard } from './FocusItemCard';
+import { AnimatePresence } from 'motion/react';
 
 export function FocusFeature() {
   const { items, addItem, toggleCompletion, removeItem, completedCount, canAddItem, maxItems } = useFocus();
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="focus-page focus-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">🎯 Today's Focus</p>
         <h2 className="page-title mt-4">Capture your top priorities for today.</h2>
         <p className="page-copy mt-4">
@@ -42,14 +43,16 @@ export function FocusFeature() {
               </div>
             ) : (
               <ul className="mt-6 space-y-3">
-                {items.map((item) => (
-                  <FocusItemCard
-                    key={item.id}
-                    item={item}
-                    onToggle={toggleCompletion}
-                    onRemove={removeItem}
-                  />
-                ))}
+                <AnimatePresence initial={false}>
+                  {items.map((item) => (
+                    <FocusItemCard
+                      key={item.id}
+                      item={item}
+                      onToggle={toggleCompletion}
+                      onRemove={removeItem}
+                    />
+                  ))}
+                </AnimatePresence>
               </ul>
             )}
           </div>

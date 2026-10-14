@@ -1,6 +1,7 @@
 import { useGoalsContext } from './GoalsContext';
 import { GoalCard } from './GoalCard';
 import { GoalInputForm } from './GoalInputForm';
+import { AnimatePresence } from 'motion/react';
 
 export function GoalsFeature() {
   const {
@@ -16,8 +17,8 @@ export function GoalsFeature() {
   } = useGoalsContext();
 
   return (
-    <div className="space-y-6">
-      <header className="border-b border-white/10 pb-8">
+    <div className="goals-feature space-y-6">
+      <header className="feature-heading border-b border-white/10 pb-8">
         <p className="eyebrow">🏆 Goal tracking</p>
         <h2 className="page-title mt-4">Keep a few gentle commitments visible.</h2>
         <p className="page-copy mt-4">
@@ -26,7 +27,7 @@ export function GoalsFeature() {
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <section className="space-y-4 rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
+        <section className="goal-outcomes-panel space-y-4 rounded-[24px] border border-white/10 bg-[#060606]/90 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Progress</p>
@@ -43,18 +44,20 @@ export function GoalsFeature() {
             </div>
           ) : (
             <div className="space-y-3">
-              {goals.map((goal) => (
-                <GoalCard
-                  key={goal.id}
-                  goal={goal}
-                  onToggle={toggleGoal}
-                  onRemove={removeGoal}
-                  onAddMilestone={addMilestone}
-                  onToggleMilestone={toggleMilestone}
-                  onRemoveMilestone={removeMilestone}
-                  onMoveMilestone={moveMilestone}
-                />
-              ))}
+              <AnimatePresence initial={false}>
+                {goals.map((goal) => (
+                  <GoalCard
+                    key={goal.id}
+                    goal={goal}
+                    onToggle={toggleGoal}
+                    onRemove={removeGoal}
+                    onAddMilestone={addMilestone}
+                    onToggleMilestone={toggleMilestone}
+                    onRemoveMilestone={removeMilestone}
+                    onMoveMilestone={moveMilestone}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </section>
