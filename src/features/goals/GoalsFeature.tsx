@@ -3,7 +3,17 @@ import { GoalCard } from './GoalCard';
 import { GoalInputForm } from './GoalInputForm';
 
 export function GoalsFeature() {
-  const { goals, addGoal, toggleGoal, removeGoal, completedCount } = useGoalsContext();
+  const {
+    goals,
+    addGoal,
+    toggleGoal,
+    removeGoal,
+    addMilestone,
+    toggleMilestone,
+    removeMilestone,
+    moveMilestone,
+    completedCount,
+  } = useGoalsContext();
 
   return (
     <div className="space-y-6">
@@ -11,7 +21,7 @@ export function GoalsFeature() {
         <p className="eyebrow">🏆 Goal tracking</p>
         <h2 className="page-title mt-4">Keep a few gentle commitments visible.</h2>
         <p className="page-copy mt-4">
-          Goals should feel calm and helpful. Keep them small enough to follow through.
+          Keep the outcome clear. Add only a few milestones when seeing the path would help.
         </p>
       </header>
 
@@ -34,7 +44,16 @@ export function GoalsFeature() {
           ) : (
             <div className="space-y-3">
               {goals.map((goal) => (
-                <GoalCard key={goal.id} goal={goal} onToggle={toggleGoal} onRemove={removeGoal} />
+                <GoalCard
+                  key={goal.id}
+                  goal={goal}
+                  onToggle={toggleGoal}
+                  onRemove={removeGoal}
+                  onAddMilestone={addMilestone}
+                  onToggleMilestone={toggleMilestone}
+                  onRemoveMilestone={removeMilestone}
+                  onMoveMilestone={moveMilestone}
+                />
               ))}
             </div>
           )}

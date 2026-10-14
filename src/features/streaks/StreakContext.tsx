@@ -3,13 +3,15 @@ import { useStreaks } from './useStreaks';
 import { StreakHabit } from './types';
 
 interface StreakContextValue {
-  habits: Array<StreakHabit & { currentStreak: number; bestStreak: number; completedToday: boolean }>;
-  addHabit: (name: string) => void;
+  habits: Array<StreakHabit & { currentStreak: number; bestStreak: number; completedToday: boolean; todayIsRestDay: boolean }>;
+  addHabit: (name: string, restDays: number[]) => void;
+  updateRestDays: (id: string, restDays: number[]) => void;
   removeHabit: (id: string) => void;
   toggleToday: (id: string) => void;
   reset: () => void;
   totalHabits: number;
   completedToday: number;
+  scheduledToday: number;
   bestStreak: number;
 }
 

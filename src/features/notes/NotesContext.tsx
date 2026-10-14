@@ -6,6 +6,7 @@ interface NotesContextValue {
   notes: Note[];
   latestNote: Note | null;
   addNote: (title: string, content: string) => void;
+  updateNote: (id: string, title: string, content: string) => void;
   removeNote: (id: string) => void;
   reset: () => void;
 }

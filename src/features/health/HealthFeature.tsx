@@ -3,7 +3,7 @@ import { useHealth } from './HealthContext';
 
 const metricDefinitions = [
   { key: 'weight' as const, label: 'Weight', unit: 'kg', placeholder: 'e.g. 72' },
-  { key: 'water' as const, label: 'Water', unit: 'glasses', placeholder: 'e.g. 8' },
+  { key: 'water' as const, label: 'Water', unit: 'bottles', placeholder: 'e.g. 2' },
   { key: 'sleep' as const, label: 'Sleep', unit: 'hours', placeholder: 'e.g. 7.5' },
   { key: 'workout' as const, label: 'Workout', unit: 'minutes', placeholder: 'e.g. 30' },
 ];
@@ -46,6 +46,33 @@ export function HealthFeature() {
                 value={health[metric.key]}
                 unit={metric.unit}
                 placeholder={metric.placeholder}
+                valueLabel={metric.key === 'water' && health.water !== null
+                  ? `${health.water} bottles (${Number((health.water * 0.75).toFixed(2))} L)`
+                  : undefined}
+                inputMin={metric.key === 'water' ? 0 : undefined}
+                inputStep={metric.key === 'water' ? 1 : 'any'}
+                controls={metric.key === 'water' ? (
+                  <div className="mt-4 flex items-center gap-3" aria-label="Water bottle controls">
+                    <button
+                      type="button"
+                      onClick={() => updateMetric('water', Math.max(0, (health.water ?? 0) - 1))}
+                      disabled={health.water === null || health.water <= 0}
+                      aria-label="Decrease water by one bottle"
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-lg font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      −
+                    </button>
+                    <span className="text-sm text-zinc-400">750 ml per bottle</span>
+                    <button
+                      type="button"
+                      onClick={() => updateMetric('water', (health.water ?? 0) + 1)}
+                      aria-label="Increase water by one bottle"
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-lg font-semibold text-white"
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : undefined}
                 onUpdate={(value) => updateMetric(metric.key, value)}
               />
             ))}

@@ -10,6 +10,7 @@ import { useSavingsContext } from '../savings/SavingsContext';
 import { useGoalsContext } from '../goals/GoalsContext';
 import { useNotesContext } from '../notes/NotesContext';
 import { useGamificationContext } from '../gamification/GamificationContext';
+import { useVisitStreakContext } from '../visits/VisitStreakContext';
 
 const startupOptions = [
   { label: 'Dashboard', value: '/dashboard' as const },
@@ -33,6 +34,7 @@ export function SettingsFeature() {
   const { goals, reset: resetGoals } = useGoalsContext();
   const { notes, reset: resetNotes } = useNotesContext();
   const { level, currentCheckInStreak, allCheckIns } = useGamificationContext();
+  const { reset: resetVisitStreak } = useVisitStreakContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -46,7 +48,7 @@ export function SettingsFeature() {
 
   const resetAllData = () => {
     const confirmed = window.confirm(
-      'Resetting app data will clear every entry, note, goal, habit, preference, level, XP, check-in, and saved progress. This cannot be undone.',
+      'Resetting app data will clear every entry, note, goal, habit, visit history, preference, level, XP, check-in, and saved progress. This cannot be undone.',
     );
     if (!confirmed) {
       return;
@@ -60,6 +62,7 @@ export function SettingsFeature() {
     resetGoals();
     resetNotes();
     resetSettings();
+    void resetVisitStreak().catch((err) => console.error('Failed to reset visit history', err));
     
     // Reset gamification data
     void Promise.all([clearCheckIns(), clearXPEvents(), clearMilestones()]).catch((err) => 

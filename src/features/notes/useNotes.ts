@@ -70,6 +70,20 @@ export function useNotes(initialNotes: Note[] = []) {
     });
   }, [syncNotes]);
 
+  const updateNote = useCallback((id: string, title: string, content: string) => {
+    const trimmedTitle = title.trim();
+    const trimmedContent = content.trim();
+    if (!trimmedTitle || !trimmedContent) return;
+
+    setNotes((current) => {
+      const nextNotes = current.map((note) =>
+        note.id === id ? { ...note, title: trimmedTitle, content: trimmedContent } : note,
+      );
+      void syncNotes(nextNotes);
+      return nextNotes;
+    });
+  }, [syncNotes]);
+
   const removeNote = useCallback((id: string) => {
     setNotes((current) => {
       const nextNotes = current.filter((note) => note.id !== id);
@@ -85,5 +99,5 @@ export function useNotes(initialNotes: Note[] = []) {
 
   const latestNote = useMemo(() => notes[0] ?? null, [notes]);
 
-  return { notes, latestNote, addNote, removeNote, reset };
+  return { notes, latestNote, addNote, updateNote, removeNote, reset };
 }

@@ -4,11 +4,13 @@ import { get, set } from 'idb-keyval';
 
 const DB_KEY = 'atlas.sqlite';
 const SAVE_DEBOUNCE_MS = 500;
+const WATER_BOTTLES_MIGRATION_KEY = 'health-water-unit-bottles-v1';
 
 let SQL: any = null;
 let db: any = null;
 let saveTimer: number | null = null;
 let initialized = false;
+let initializationPromise: Promise<void> | null = null;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT);
@@ -42,7 +44,12 @@ CREATE TABLE IF NOT EXISTS streak_habits (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   history TEXT NOT NULL,
+  restDays TEXT NOT NULL DEFAULT '[]',
   createdAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS visit_days (
+  date TEXT PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS savings_entries (
@@ -60,6 +67,20 @@ CREATE TABLE IF NOT EXISTS goals (
   completed INTEGER NOT NULL DEFAULT 0,
   createdAt TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS goal_milestones (
+  id TEXT PRIMARY KEY,
+  goalId TEXT NOT NULL,
+  title TEXT NOT NULL,
+  position INTEGER NOT NULL,
+  completed INTEGER NOT NULL DEFAULT 0,
+  createdAt TEXT NOT NULL,
+  completedAt TEXT,
+  FOREIGN KEY (goalId) REFERENCES goals(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_goal_milestones_goalId_position
+  ON goal_milestones(goalId, position);
 
 CREATE TABLE IF NOT EXISTS notes (
   id TEXT PRIMARY KEY,
@@ -117,7 +138,17 @@ async function saveImmediate() {
 
 export async function initDatabase() {
   if (initialized) return;
+  if (initializationPromise) return initializationPromise;
 
+  initializationPromise = initializeDatabase();
+  try {
+    await initializationPromise;
+  } finally {
+    initializationPromise = null;
+  }
+}
+
+async function initializeDatabase() {
   // Lazy load sql.js and initialize DB from IndexedDB or create new one.
   if (!SQL) {
     SQL = await (initSqlJs as any)({ locateFile: () => sqlWasmUrl });
@@ -129,13 +160,10 @@ export async function initDatabase() {
     db = new SQL.Database(bytes);
   } else {
     db = new SQL.Database();
-    await saveImmediate();
   }
 
   ensureSchema();
-  if (!existing) {
-    await saveImmediate();
-  }
+  await saveImmediate();
 
   initialized = true;
 }
@@ -155,6 +183,7 @@ function getTableColumns(tableName: string) {
 function ensureSchema() {
   if (!db) throw new Error('DB not initialized');
 
+  db.run('PRAGMA foreign_keys = ON;');
   db.run(SCHEMA);
 
   const journalColumns = getTableColumns('journal_entries');
@@ -173,6 +202,20 @@ function ensureSchema() {
   const savingsColumns = getTableColumns('savings_entries');
   if (!savingsColumns.includes('category')) {
     db.run("ALTER TABLE savings_entries ADD COLUMN category TEXT NOT NULL DEFAULT 'savings';");
+  }
+
+  const streakColumns = getTableColumns('streak_habits');
+  if (!streakColumns.includes('restDays')) {
+    db.run("ALTER TABLE streak_habits ADD COLUMN restDays TEXT NOT NULL DEFAULT '[]';");
+  }
+
+  const waterUnitMigration = queryRows('SELECT value FROM settings WHERE key = ? LIMIT 1;', [WATER_BOTTLES_MIGRATION_KEY]);
+  if (waterUnitMigration.length === 0) {
+    const legacyWaterValue = queryRows('SELECT water FROM health_state WHERE id = ? LIMIT 1;', ['current']);
+    if (legacyWaterValue.length > 0 && legacyWaterValue[0].water !== null) {
+      db.run('UPDATE health_state SET water = NULL WHERE id = ?;', ['current']);
+    }
+    db.run('INSERT INTO settings (key, value) VALUES (?, ?);', [WATER_BOTTLES_MIGRATION_KEY, 'bottles-750ml']);
   }
 }
 
@@ -291,24 +334,42 @@ export async function clearHealthSnapshot() {
 // Streak helpers
 export async function getStreakHabitsFromDB() {
   await initDatabase();
-  const rows = queryRows('SELECT id, name, history, createdAt FROM streak_habits ORDER BY createdAt DESC');
+  const rows = queryRows('SELECT id, name, history, restDays, createdAt FROM streak_habits ORDER BY createdAt DESC');
   return rows.map((row: any) => ({
     id: row.id,
     name: row.name,
     history: JSON.parse(row.history),
+    restDays: JSON.parse(row.restDays || '[]'),
     createdAt: row.createdAt,
   }));
 }
 
-export async function replaceStreakHabitsInDB(habits: Array<{ id: string; name: string; history: string[]; createdAt: string }>) {
+export async function replaceStreakHabitsInDB(habits: Array<{ id: string; name: string; history: string[]; restDays: number[]; createdAt: string }>) {
   await initDatabase();
   execAll('DELETE FROM streak_habits;');
   for (const habit of habits) {
     execAll(
-      'INSERT OR REPLACE INTO streak_habits (id, name, history, createdAt) VALUES (?, ?, ?, ?);',
-      [habit.id, habit.name, JSON.stringify(habit.history), habit.createdAt],
+      'INSERT OR REPLACE INTO streak_habits (id, name, history, restDays, createdAt) VALUES (?, ?, ?, ?, ?);',
+      [habit.id, habit.name, JSON.stringify(habit.history), JSON.stringify(habit.restDays), habit.createdAt],
     );
   }
+  scheduleSave();
+}
+
+export async function recordVisitDayInDB(date: string) {
+  await initDatabase();
+  execAll('INSERT OR IGNORE INTO visit_days (date) VALUES (?);', [date]);
+  scheduleSave();
+}
+
+export async function getVisitDaysFromDB(): Promise<string[]> {
+  await initDatabase();
+  return queryRows('SELECT date FROM visit_days ORDER BY date ASC').map((row: any) => String(row.date));
+}
+
+export async function clearVisitDays() {
+  await initDatabase();
+  execAll('DELETE FROM visit_days;');
   scheduleSave();
 }
 
@@ -352,11 +413,75 @@ export async function getGoalsFromDB() {
 
 export async function replaceGoalsInDB(goals: Array<{ id: string; title: string; note?: string; completed: boolean; createdAt: string }>) {
   await initDatabase();
+  execAll('DELETE FROM goal_milestones;');
   execAll('DELETE FROM goals;');
   for (const goal of goals) {
     execAll(
       'INSERT OR REPLACE INTO goals (id, title, note, completed, createdAt) VALUES (?, ?, ?, ?, ?);',
       [goal.id, goal.title, goal.note ?? null, goal.completed ? 1 : 0, goal.createdAt],
+    );
+  }
+  scheduleSave();
+}
+
+export async function saveGoalInDB(goal: { id: string; title: string; note?: string; completed: boolean; createdAt: string }) {
+  await initDatabase();
+  execAll(
+    `INSERT INTO goals (id, title, note, completed, createdAt) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+       title = excluded.title,
+       note = excluded.note,
+       completed = excluded.completed,
+       createdAt = excluded.createdAt;`,
+    [goal.id, goal.title, goal.note ?? null, goal.completed ? 1 : 0, goal.createdAt],
+  );
+  scheduleSave();
+}
+
+export async function deleteGoalFromDB(goalId: string) {
+  await initDatabase();
+  execAll('DELETE FROM goal_milestones WHERE goalId = ?;', [goalId]);
+  execAll('DELETE FROM goals WHERE id = ?;', [goalId]);
+  scheduleSave();
+}
+
+export async function getGoalMilestonesFromDB(): Promise<Array<{
+  id: string;
+  goalId: string;
+  title: string;
+  position: number;
+  completed: boolean;
+  createdAt: string;
+  completedAt?: string;
+}>> {
+  await initDatabase();
+  const rows = queryRows('SELECT id, goalId, title, position, completed, createdAt, completedAt FROM goal_milestones ORDER BY goalId, position;');
+  return rows.map((row: any) => ({
+    id: row.id,
+    goalId: row.goalId,
+    title: row.title,
+    position: Number(row.position),
+    completed: Boolean(row.completed),
+    createdAt: row.createdAt,
+    completedAt: row.completedAt ?? undefined,
+  }));
+}
+
+export async function replaceGoalMilestonesInDB(goalId: string, milestones: Array<{
+  id: string;
+  goalId: string;
+  title: string;
+  position: number;
+  completed: boolean;
+  createdAt: string;
+  completedAt?: string;
+}>) {
+  await initDatabase();
+  execAll('DELETE FROM goal_milestones WHERE goalId = ?;', [goalId]);
+  for (const milestone of milestones) {
+    execAll(
+      'INSERT INTO goal_milestones (id, goalId, title, position, completed, createdAt, completedAt) VALUES (?, ?, ?, ?, ?, ?, ?);',
+      [milestone.id, goalId, milestone.title, milestone.position, milestone.completed ? 1 : 0, milestone.createdAt, milestone.completedAt ?? null],
     );
   }
   scheduleSave();

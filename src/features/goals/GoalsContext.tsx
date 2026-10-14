@@ -1,12 +1,16 @@
 import { createContext, ReactNode, useContext } from 'react';
 import { useGoals } from './useGoals';
-import { Goal } from './types';
+import { GoalWithMilestones } from './types';
 
 interface GoalsContextValue {
-  goals: Goal[];
+  goals: GoalWithMilestones[];
   addGoal: (title: string, note?: string) => void;
   toggleGoal: (id: string) => void;
   removeGoal: (id: string) => void;
+  addMilestone: (goalId: string, title: string) => void;
+  toggleMilestone: (goalId: string, milestoneId: string) => void;
+  removeMilestone: (goalId: string, milestoneId: string) => void;
+  moveMilestone: (goalId: string, milestoneId: string, direction: -1 | 1) => void;
   reset: () => void;
   completedCount: number;
 }

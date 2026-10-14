@@ -1,6 +1,6 @@
 # Atlas Architecture
 
-Last verified: 2026-08-04
+Last verified: 2026-10-14
 
 ## Overview
 
@@ -17,7 +17,7 @@ BrowserRouter
 
 ## Implemented modules
 
-- `dashboard`: cross-feature daily, weekly, and monthly summaries
+- `dashboard`: cross-feature daily, weekly, and monthly summaries, including a neutral local visit-streak indicator
 - `focus`, `health`, `journal`, `streaks`, `savings`, `goals`, `notes`: feature state backed by `lib/persistence/sqlite.ts`
 - `settings`: startup preference and backup import/export through the SQLite database
 
@@ -33,8 +33,14 @@ Shared layout belongs in `src/components/layout`, generic cards in `src/componen
 - streak habits
 - savings entries
 - goals
+- ordered goal milestones in `goal_milestones`, with cascading parent deletion
 - notes
 - settings, including the startup preference
+- unique local visit dates in `visit_days`
+
+Habit rest days are stored as a JSON weekday array on each `streak_habits` row. Existing databases and imported backups receive the new column with an empty-array default, preserving the former daily schedule. Visit dates use a primary-key local `YYYY-MM-DD` value, making repeat startup writes for the same date idempotent. Both features are included automatically in full SQLite backups; Settings reset clears visit history.
+
+Goal milestones are stored separately from their parent outcomes. The additive `goal_milestones` migration runs during normal initialization and backup import, preserves existing goal rows, adds a `(goalId, position)` index, and uses `ON DELETE CASCADE` for parent deletion. Settings reset clears milestones by deleting the goals. Completing milestones never changes the parent goal's manually controlled completion state.
 
 Goals, Notes, and the startup preference are migrated automatically from their former `localStorage` keys when no corresponding SQLite data exists. They are then removed from `localStorage`.
 

@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { useSavingsContext } from './SavingsContext';
+import { getSignedAmount } from './utils';
 
 export function SavingsFeature() {
   const { entries, addEntry, removeEntry, balance } = useSavingsContext();
@@ -10,7 +11,7 @@ export function SavingsFeature() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const parsedAmount = Number(amount);
-    if (!description.trim() || Number.isNaN(parsedAmount)) {
+    if (!description.trim() || !amount.trim() || !Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       return;
     }
 
@@ -25,8 +26,8 @@ export function SavingsFeature() {
       return 'Start tracking small deposits or withdrawals to build a clearer picture of your savings.';
     }
 
-    const positiveEntries = entries.filter((entry) => entry.amount > 0).length;
-    const negativeEntries = entries.filter((entry) => entry.amount < 0).length;
+    const positiveEntries = entries.filter((entry) => getSignedAmount(entry) > 0).length;
+    const negativeEntries = entries.filter((entry) => getSignedAmount(entry) < 0).length;
     return `Current balance ₹${balance.toFixed(2)} • ${positiveEntries} inflows • ${negativeEntries} outflows`;
   }, [balance, entries]);
 
@@ -56,28 +57,31 @@ export function SavingsFeature() {
                 Add your first savings entry to begin tracking progress.
               </div>
             ) : (
-              entries.map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-4">
-                  <div>
-                    <p className="text-sm font-semibold text-white">{entry.description}</p>
-                    <p className="mt-1 text-[11px] uppercase tracking-[0.32em] text-zinc-500">
-                      {new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                    </p>
+              entries.map((entry) => {
+                const signedAmount = getSignedAmount(entry);
+                return (
+                  <div key={entry.id} className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-4">
+                    <div>
+                      <p className="text-sm font-semibold text-white">{entry.description}</p>
+                      <p className="mt-1 text-[11px] uppercase tracking-[0.32em] text-zinc-500">
+                        {new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-sm font-semibold ${signedAmount >= 0 ? 'text-zinc-200' : 'text-zinc-400'}`}>
+                        {signedAmount >= 0 ? '+' : ''}₹{Math.abs(signedAmount).toFixed(2)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeEntry(entry.id)}
+                        className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-zinc-400"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-sm font-semibold ${entry.amount >= 0 ? 'text-zinc-200' : 'text-zinc-400'}`}>
-                      {entry.amount >= 0 ? '+' : ''}₹{entry.amount.toFixed(2)}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeEntry(entry.id)}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-zinc-400"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </section>
@@ -105,7 +109,9 @@ export function SavingsFeature() {
               onChange={(event) => setAmount(event.target.value)}
               placeholder="25"
               type="number"
+              min="0.01"
               step="0.01"
+              required
               className="mt-2 w-full rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/10"
             />
           </label>

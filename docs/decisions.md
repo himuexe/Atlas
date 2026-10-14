@@ -214,11 +214,11 @@ The implementation moved beyond the earlier Dexie proposal and now ships an SQLi
 
 ---
 
-# ADR-008
+# ADR-008 (superseded by ADR-009)
 
 ## Personal gamification for V2
 
-**Status:** Accepted
+**Status:** Superseded
 
 ### Decision
 
@@ -235,6 +235,22 @@ The existing product already records the actions that matter: focus completion, 
 - Daily Check-ins must be brief and optional, with no pressure-heavy failure state.
 - Reset journeys are explicitly out of scope for this personal V2.
 - The data model should use an auditable event ledger so XP totals and milestones can be recalculated reliably.
+
+---
+
+# ADR-009
+
+## Gamification deferred from the active roadmap
+
+**Status:** Accepted
+
+### Decision
+
+Daily Check-ins, XP, levels, milestones, and weekly recap are deferred and are not part of the active V2 roadmap. They are removed from the dashboard, and no replacement Progress page will be added at this time.
+
+Existing check-in and XP data remains in the local SQLite database and backups. The visit streak is a separate informational feature and does not create check-ins, award XP, or count as habit completion.
+
+See [the full ADR](adr-009-gamification-deferred.md).
 
 ---
 

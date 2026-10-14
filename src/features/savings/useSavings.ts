@@ -45,11 +45,11 @@ export function useSavings(initialEntries: SavingsEntry[] = []) {
 
   const addEntry = useCallback((amount: number, description: string, category: 'income' | 'expense' | 'savings') => {
     const trimmedDescription = description.trim();
-    if (!trimmedDescription || Number.isNaN(amount)) {
+    if (!trimmedDescription || !Number.isFinite(amount) || amount <= 0) {
       return;
     }
 
-    const nextEntry = createEntry(amount, trimmedDescription, category);
+    const nextEntry = createEntry(Math.abs(amount), trimmedDescription, category);
     setEntries((current) => {
       const nextEntries = [nextEntry, ...current];
       void syncEntries(nextEntries);

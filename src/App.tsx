@@ -18,31 +18,34 @@ import { SavingsProvider } from './features/savings/SavingsContext';
 import { GoalsProvider } from './features/goals/GoalsContext';
 import { NotesProvider } from './features/notes/NotesContext';
 import { GamificationProvider } from './features/gamification/GamificationContext';
+import { VisitStreakProvider } from './features/visits/VisitStreakContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <SettingsProvider>
-        <FocusProvider>
-          <HealthProvider>
-            <JournalProvider>
-              <StreakProvider>
-                <SavingsProvider>
-                  <GoalsProvider>
-                    <NotesProvider>
-                      <GamificationProvider>
-                        <AppShell>
-                          <AppRoutes />
-                        </AppShell>
-                      </GamificationProvider>
-                    </NotesProvider>
-                  </GoalsProvider>
-                </SavingsProvider>
-              </StreakProvider>
-            </JournalProvider>
-          </HealthProvider>
-        </FocusProvider>
-      </SettingsProvider>
+      <VisitStreakProvider>
+        <SettingsProvider>
+          <FocusProvider>
+            <HealthProvider>
+              <JournalProvider>
+                <StreakProvider>
+                  <SavingsProvider>
+                    <GoalsProvider>
+                      <NotesProvider>
+                        <GamificationProvider>
+                          <AppShell>
+                            <AppRoutes />
+                          </AppShell>
+                        </GamificationProvider>
+                      </NotesProvider>
+                    </GoalsProvider>
+                  </SavingsProvider>
+                </StreakProvider>
+              </JournalProvider>
+            </HealthProvider>
+          </FocusProvider>
+        </SettingsProvider>
+      </VisitStreakProvider>
     </BrowserRouter>
   );
 }

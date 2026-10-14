@@ -3,7 +3,7 @@ import { StreakHabitCard } from './StreakHabitCard';
 import { useStreaksContext } from './StreakContext';
 
 export function StreaksFeature() {
-  const { habits, addHabit, toggleToday, removeHabit, totalHabits, completedToday, bestStreak } = useStreaksContext();
+  const { habits, addHabit, updateRestDays, toggleToday, removeHabit, totalHabits, completedToday, scheduledToday, bestStreak } = useStreaksContext();
 
   return (
     <div className="space-y-6">
@@ -25,15 +25,16 @@ export function StreaksFeature() {
               </div>
               <div className="rounded-[20px] border border-white/10 bg-white/5 p-4">
                 <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-400">Completed today</p>
-                <p className="mt-2 text-3xl font-semibold tracking-tight text-white">{completedToday}</p>
-                {totalHabits > 0 && (
+                <p className="mt-2 text-3xl font-semibold tracking-tight text-white">{completedToday}/{scheduledToday}</p>
+                {scheduledToday > 0 && (
                   <div className="mt-3 h-1 w-full rounded-full bg-white/10 overflow-hidden">
                     <div
                       className="h-full bg-white transition-all duration-300"
-                      style={{ width: `${totalHabits > 0 ? (completedToday / totalHabits) * 100 : 0}%` }}
+                      style={{ width: `${(completedToday / scheduledToday) * 100}%` }}
                     />
                   </div>
                 )}
+                <p className="mt-2 text-xs text-zinc-500">{scheduledToday} scheduled today</p>
               </div>
               <div className="rounded-[20px] border border-white/10 bg-white/[0.03] p-4">
                 <p className="text-[11px] uppercase tracking-[0.32em] text-zinc-500">Best streak</p>
@@ -54,6 +55,7 @@ export function StreaksFeature() {
                     key={habit.id}
                     habit={habit}
                     onToggleToday={toggleToday}
+                    onUpdateRestDays={updateRestDays}
                     onRemove={removeHabit}
                   />
                 ))}

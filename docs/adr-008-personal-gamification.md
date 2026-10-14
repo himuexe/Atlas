@@ -2,7 +2,7 @@
 
 Date: 2026-08-04
 
-Status: Accepted
+Status: Superseded by [ADR-009 — Gamification deferred from the active roadmap](adr-009-gamification-deferred.md)
 
 ### Decision
 

@@ -4,16 +4,14 @@ import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
 import { useStreaksContext } from '../streaks/StreakContext';
-import { CheckInCard } from '../gamification/CheckInCard';
-import { PersonalLevel } from '../gamification/PersonalLevel';
-import { MilestonesDisplay } from '../gamification/MilestonesDisplay';
-import { WeeklyRecap } from '../gamification/WeeklyRecap';
+import { useVisitStreakContext } from '../visits/VisitStreakContext';
 
 export function DashboardOverview() {
   const { items, completedCount } = useFocus();
   const { health } = useHealth();
   const { latestEntry, entries } = useJournalContext();
-  const { totalHabits, completedToday, bestStreak } = useStreaksContext();
+  const { totalHabits, completedToday, scheduledToday, bestStreak } = useStreaksContext();
+  const { currentStreak: visitStreak } = useVisitStreakContext();
 
   const focusSummary = useMemo(() => {
     if (items.length === 0) return 'Choose up to three priorities that will make today feel meaningful.';
@@ -52,7 +50,12 @@ export function DashboardOverview() {
   return (
     <div className="mx-auto max-w-6xl space-y-12">
       <header className="border-b border-white/10 pb-8">
-        <p className="eyebrow">{todayLabel}</p>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <p className="eyebrow">{todayLabel}</p>
+          <p className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">
+            Visit streak <span className="ml-1 font-medium text-zinc-200">{visitStreak === null ? '—' : `${visitStreak} day${visitStreak === 1 ? '' : 's'}`}</span>
+          </p>
+        </div>
         <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2 className="page-title">What matters today.</h2>
@@ -61,27 +64,6 @@ export function DashboardOverview() {
           <p className="max-w-sm text-sm leading-6 text-zinc-500 lg:text-right">{dailyPrompt}</p>
         </div>
       </header>
-
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="eyebrow">Your day starts here</p>
-            <h3 className="mt-2 text-xl font-semibold tracking-[-0.035em] text-white">Daily check-in & progress.</h3>
-          </div>
-        </div>
-
-        {/* Check-in Card */}
-        <CheckInCard />
-
-        {/* Personal Level and Milestones */}
-        <div className="grid gap-6 xl:grid-cols-2">
-          <PersonalLevel />
-          <MilestonesDisplay />
-        </div>
-
-        {/* Weekly Recap */}
-        <WeeklyRecap />
-      </section>
 
       <section className="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 lg:grid-cols-[1.45fr_0.85fr]">
         <div className="bg-[#080808] p-6 sm:p-8">
@@ -110,7 +92,7 @@ export function DashboardOverview() {
             </div>
             <div className="flex items-baseline justify-between">
               <dt className="text-sm text-zinc-500">Streaks</dt>
-              <dd className="text-sm font-medium text-white">{completedToday}/{totalHabits}</dd>
+              <dd className="text-sm font-medium text-white">{completedToday}/{scheduledToday}</dd>
             </div>
           </dl>
         </div>

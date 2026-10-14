@@ -1,76 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StreakHabit } from './types';
 import { getStreakHabitsFromDB, replaceStreakHabitsInDB } from '../../lib/persistence/sqlite';
+import { calculateBestStreak, calculateCurrentStreak, getLocalDateKey, isRestDay } from './utils';
 
-const formatDate = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+const todayKey = () => getLocalDateKey(new Date());
 
-const todayKey = () => formatDate(new Date());
-
-function parseDateKey(dateKey: string) {
-  const [year, month, day] = dateKey.split('-').map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function isConsecutive(previous: string, current: string) {
-  const prev = parseDateKey(previous);
-  const curr = parseDateKey(current);
-  return prev.getTime() + 24 * 60 * 60 * 1000 === curr.getTime();
-}
-
-function getCurrentStreak(history: string[]): number {
-  const sorted = Array.from(new Set(history)).sort();
-  if (!sorted.length) {
-    return 0;
-  }
-
-  const today = todayKey();
-  const yesterday = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
-
-  // If neither today nor yesterday is in history, streak is broken
-  if (!sorted.includes(today) && !sorted.includes(yesterday)) {
-    return 0;
-  }
-
-  // Start counting from the most recent date (today or yesterday)
-  let streak = 0;
-  let cursor = new Date(sorted[sorted.length - 1]);
-  const normalizedHistory = new Set(sorted);
-
-  while (normalizedHistory.has(cursor.toISOString().slice(0, 10))) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  return streak;
-}
-
-function getBestStreak(history: string[]): number {
-  const sorted = Array.from(new Set(history)).sort();
-  if (!sorted.length) {
-    return 0;
-  }
-
-  let best = 0;
-  let currentStreak = 1;
-
-  for (let i = 1; i < sorted.length; i += 1) {
-    if (isConsecutive(sorted[i - 1], sorted[i])) {
-      currentStreak += 1;
-    } else {
-      best = Math.max(best, currentStreak);
-      currentStreak = 1;
-    }
-  }
-
-  return Math.max(best, currentStreak);
-}
-
-function createHabit(name: string): StreakHabit {
+function createHabit(name: string, restDays: number[]): StreakHabit {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     name: name.trim(),
     history: [],
+    restDays,
     createdAt: new Date().toISOString(),
   };
 }
@@ -105,14 +45,24 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
     }
   }, []);
 
-  const addHabit = useCallback((name: string) => {
+  const addHabit = useCallback((name: string, restDays: number[]) => {
     const trimmed = name.trim();
     if (!trimmed) {
       return;
     }
 
     setHabits((current) => {
-      const nextHabits = [...current, createHabit(trimmed)];
+      const nextHabits = [...current, createHabit(trimmed, restDays)];
+      void syncHabits(nextHabits);
+      return nextHabits;
+    });
+  }, [syncHabits]);
+
+  const updateRestDays = useCallback((id: string, restDays: number[]) => {
+    const normalizedRestDays = Array.from(new Set(restDays))
+      .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6);
+    setHabits((current) => {
+      const nextHabits = current.map((habit) => habit.id === id ? { ...habit, restDays: normalizedRestDays } : habit);
       void syncHabits(nextHabits);
       return nextHabits;
     });
@@ -134,6 +84,7 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
         }
 
         const today = todayKey();
+        if (isRestDay(today, habit.restDays)) return habit;
         const hasToday = habit.history.includes(today);
         const nextHistory = hasToday
           ? habit.history.filter((value) => value !== today)
@@ -155,20 +106,23 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
   }, [syncHabits]);
 
   const summary = useMemo(() => {
+    const today = todayKey();
     const total = habits.length;
-    const doneToday = habits.filter((habit) => habit.history.includes(todayKey())).length;
-    const bestStreak = habits.reduce((max, habit) => Math.max(max, getBestStreak(habit.history)), 0);
+    const scheduledToday = habits.filter((habit) => !isRestDay(today, habit.restDays));
+    const doneToday = scheduledToday.filter((habit) => habit.history.includes(today)).length;
+    const bestStreak = habits.reduce((max, habit) => Math.max(max, calculateBestStreak(habit.history, habit.restDays)), 0);
 
-    return { total, doneToday, bestStreak };
+    return { total, doneToday, scheduledToday: scheduledToday.length, bestStreak };
   }, [habits]);
 
   const habitsWithStreaks = useMemo(
     () =>
       habits.map((habit) => ({
         ...habit,
-        currentStreak: getCurrentStreak(habit.history),
-        bestStreak: getBestStreak(habit.history),
+        currentStreak: calculateCurrentStreak(habit.history, habit.restDays),
+        bestStreak: calculateBestStreak(habit.history, habit.restDays),
         completedToday: habit.history.includes(todayKey()),
+        todayIsRestDay: isRestDay(todayKey(), habit.restDays),
       })),
     [habits],
   );
@@ -176,11 +130,13 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
   return {
     habits: habitsWithStreaks,
     addHabit,
+    updateRestDays,
     removeHabit,
     toggleToday,
     reset,
     totalHabits: summary.total,
     completedToday: summary.doneToday,
+    scheduledToday: summary.scheduledToday,
     bestStreak: summary.bestStreak,
   };
 }
