@@ -1,16 +1,22 @@
+@import './theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #050505;
-  color: #fafafa;
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
 }
 
 * {
   box-sizing: border-box;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--color-signal);
 }
 
 html {
@@ -20,8 +26,8 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #050505;
-  color: #fafafa;
+  background: var(--color-canvas);
+  color: var(--color-text-primary);
   line-height: 1.5;
   letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
@@ -33,8 +39,8 @@ body {
 }
 
 ::selection {
-  background: #f5f5f5;
-  color: #050505;
+  background: var(--color-signal);
+  color: var(--color-canvas);
 }
 
 ::-webkit-scrollbar {
@@ -42,17 +48,46 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #040404;
+  background: var(--color-canvas);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(var(--rgb-text-muted) / 35%);
   border-radius: 999px;
 }
 
+:root :is(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+}
+
+:root :is(input, textarea, select):focus-visible {
+  border-color: var(--color-signal);
+  box-shadow: var(--shadow-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @layer components {
+  .app-shell {
+    background:
+      radial-gradient(ellipse at 78% 0%, rgb(var(--rgb-signal) / 3.5%), transparent 38rem),
+      var(--color-canvas);
+  }
+
   .surface {
-    @apply border border-white/10 bg-white/[0.025];
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-surface);
   }
 
   .eyebrow {
@@ -69,9 +104,37 @@ body {
 
   .quiet-button {
     @apply inline-flex items-center justify-center rounded-lg border border-white/15 px-3.5 py-2 text-sm font-medium text-zinc-200 transition hover:border-white/35 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white/30;
+    transition-duration: var(--transition-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+
+  :root .quiet-button:hover {
+    border-color: var(--color-signal);
+    background-color: var(--color-signal);
+    color: var(--color-canvas);
   }
 
   .primary-button {
-    @apply inline-flex items-center justify-center rounded-lg bg-white px-3.5 py-2 text-sm font-medium text-black transition hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-white/40;
+    @apply inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-white/40;
+    background-color: var(--color-signal);
+    color: var(--color-canvas);
+    transition-duration: var(--transition-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+
+  .primary-button:hover {
+    background-color: var(--color-signal-hover);
+  }
+}
+
+@layer utilities {
+  [class~="bg-[#060606]/90"],
+  [class~="bg-[#060606]"],
+  [class~="bg-[#080808]"] {
+    background-color: var(--color-surface-raised);
+  }
+
+  .bg-white {
+    background-color: var(--color-signal);
   }
 }

@@ -10,7 +10,7 @@ interface DashboardCardProps {
 
 export function DashboardCard({ title, description, to, badge, actionLabel = 'View' }: DashboardCardProps) {
   return (
-    <article className="surface group flex min-h-[210px] flex-col rounded-2xl p-5 transition hover:border-white/20 hover:bg-white/[0.045]">
+    <article className="surface group flex min-h-[210px] flex-col rounded-2xl p-5 transition hover:border-signal/30 hover:bg-white/[0.045]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="eyebrow">{title}</p>

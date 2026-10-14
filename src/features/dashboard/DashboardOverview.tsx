@@ -66,7 +66,7 @@ export function DashboardOverview() {
       </header>
 
       <section className="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 lg:grid-cols-[1.45fr_0.85fr]">
-        <div className="bg-[#080808] p-6 sm:p-8">
+        <div className="bg-raised p-6 sm:p-8">
           <div className="flex items-start justify-between gap-6">
             <div>
               <p className="eyebrow">Today’s focus</p>
@@ -79,7 +79,7 @@ export function DashboardOverview() {
           </div>
           <p className="mt-3 text-xs text-zinc-500">{items.length === 0 ? 'No priorities selected' : `${items.length - completedCount} remaining`}</p>
         </div>
-        <div className="bg-[#080808] p-6 sm:p-8">
+        <div className="bg-raised p-6 sm:p-8">
           <p className="eyebrow">Daily rhythm</p>
           <dl className="mt-6 space-y-5">
             <div className="flex items-baseline justify-between border-b border-white/10 pb-4">

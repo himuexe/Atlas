@@ -16,7 +16,7 @@ function linkClass(isActive: boolean) {
   return [
     'block rounded-lg px-3 py-2.5 text-sm transition',
     isActive
-      ? 'bg-white text-black font-medium'
+      ? 'bg-white text-black font-medium shadow-[0_0_18px_var(--color-signal-glow)]'
       : 'text-zinc-500 hover:bg-white/[0.06] hover:text-white',
   ].join(' ');
 }

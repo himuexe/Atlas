@@ -49,7 +49,7 @@ export function JournalInputForm({ onCreate }: JournalInputFormProps) {
       </div>
       <button
         type="submit"
-        className="inline-flex items-center rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+        className="inline-flex items-center rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-signal-hover"
       >
         Save entry
       </button>

@@ -1,0 +1,50 @@
+:root {
+  color-scheme: dark;
+
+  /* Palette: hex values are documented here; RGB channels power Tailwind alpha utilities. */
+  --color-canvas: #080d0a;
+  --rgb-canvas: 8 13 10;
+  --color-surface: #101812;
+  --rgb-surface: 16 24 18;
+  --color-surface-raised: #152019;
+  --rgb-surface-raised: 21 32 25;
+  --color-surface-highlight: #1b2820;
+  --rgb-surface-highlight: 27 40 32;
+  --color-border-subtle: #29382d;
+  --rgb-border-subtle: 41 56 45;
+  --color-border-strong: #405a46;
+  --rgb-border-strong: 64 90 70;
+
+  --color-text-primary: #f1f5f2;
+  --rgb-text-primary: 241 245 242;
+  --color-text-secondary: #b6c1b9;
+  --rgb-text-secondary: 182 193 185;
+  --color-text-muted: #929d95;
+  --rgb-text-muted: 146 157 149;
+  --color-text-subtle: #87948b;
+  --rgb-text-subtle: 135 148 139;
+
+  --color-forest: #244534;
+  --rgb-forest: 36 69 52;
+  --color-signal: #a3e635;
+  --rgb-signal: 163 230 53;
+  --color-signal-hover: #b7ed72;
+  --rgb-signal-hover: 183 237 114;
+  --color-signal-glow: rgb(163 230 53 / 14%);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+  --radius-panel: 1rem;
+  --shadow-surface: 0 12px 32px rgb(0 0 0 / 18%);
+  --shadow-focus: 0 0 0 3px var(--color-signal-glow);
+  --transition-fast: 140ms;
+  --transition-standard: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}

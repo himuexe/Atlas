@@ -34,7 +34,7 @@ export function GoalInputForm({ onAdd }: GoalInputFormProps) {
         placeholder="Optional note or support detail"
         className="w-full rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/10"
       />
-      <button type="submit" className="w-full rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200">
+      <button type="submit" className="w-full rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-signal-hover">
         Add goal
       </button>
     </form>

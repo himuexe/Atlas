@@ -128,7 +128,7 @@ export function StreakHabitCard({ habit, onToggleToday, onUpdateRestDays, onRemo
             disabled={habit.todayIsRestDay}
             className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-colors ${
               habit.completedToday
-                ? 'bg-white text-black hover:bg-zinc-100'
+                ? 'bg-white text-black hover:bg-signal-hover'
                 : 'border border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10'
             }`}
           >

@@ -52,7 +52,7 @@ export function FocusInputForm({ onAdd, disabled, maxItems }: FocusInputFormProp
         <button
           type="submit"
           disabled={disabled}
-          className="rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-signal-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           Add
         </button>
