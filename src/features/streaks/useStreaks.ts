@@ -100,10 +100,10 @@ export function useStreaks(initialHabits: StreakHabit[] = []) {
     });
   }, [syncHabits]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     setHabits([]);
-    void syncHabits([]);
-  }, [syncHabits]);
+    await replaceStreakHabitsInDB([]);
+  }, []);
 
   const summary = useMemo(() => {
     const today = todayKey();

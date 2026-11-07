@@ -94,11 +94,11 @@ void main() {
   float particleLight = particle * particleMask * (0.55 + 0.22 * sin(time * 0.35 + seed * 20.0));
 
   vec3 color = vec3(0.0, 0.0, 0.0);
-  color += vec3(0.004, 0.035, 0.013) * haze;
-  color += vec3(0.012, 0.23, 0.075) * core;
-  color += vec3(0.032, 0.52, 0.16) * source;
-  color += vec3(0.018, 0.31, 0.1) * wisps;
-  color += vec3(0.032, 0.4, 0.13) * particleLight;
+  color += vec3(0.018, 0.008, 0.045) * haze;
+  color += vec3(0.12, 0.065, 0.30) * core;
+  color += vec3(0.28, 0.16, 0.58) * source;
+  color += vec3(0.17, 0.095, 0.40) * wisps;
+  color += vec3(0.23, 0.13, 0.52) * particleLight;
 
   float alpha = clamp(haze * 0.38 + core * 0.34 + source * 0.16 + wisps * 0.24 + particleLight * 0.6, 0.0, 0.7);
   gl_FragColor = vec4(color, alpha);

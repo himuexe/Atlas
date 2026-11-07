@@ -8,7 +8,7 @@ interface NotesContextValue {
   addNote: (title: string, content: string) => void;
   updateNote: (id: string, title: string, content: string) => void;
   removeNote: (id: string) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
 }
 
 const NotesContext = createContext<NotesContextValue | null>(null);

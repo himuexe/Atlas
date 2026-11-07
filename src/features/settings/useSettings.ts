@@ -71,11 +71,9 @@ export function useSettings() {
     });
   }, []);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
+    await removeSettingFromDB(STARTUP_PAGE_KEY);
     setStartupPage(DEFAULT_STARTUP_PAGE);
-    void removeSettingFromDB(STARTUP_PAGE_KEY).catch((error) => {
-      console.error('Failed to reset startup preference', error);
-    });
   }, []);
 
   return { startupPage, setStartupPage: updateStartupPage, reset };

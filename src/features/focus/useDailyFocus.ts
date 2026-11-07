@@ -76,10 +76,10 @@ export function useDailyFocus(initialItems: FocusItem[] = []) {
     });
   }, [syncItems]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     setItems([]);
-    void syncItems([]);
-  }, [syncItems]);
+    await replaceFocusItemsInDB([]);
+  }, []);
 
   const completedCount = useMemo(
     () => items.filter((item) => item.completed).length,

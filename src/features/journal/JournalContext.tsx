@@ -10,7 +10,7 @@ interface JournalContextValue {
   setQuery: (query: string) => void;
   addEntry: (content: string, mood?: string, energy?: string) => void;
   removeEntry: (id: string) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
 }
 
 const JournalContext = createContext<JournalContextValue | null>(null);

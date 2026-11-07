@@ -1,0 +1,1121 @@
+# ATLAS — MASTER PROJECT CONTEXT & PRODUCT VISION
+## Building a Personal Operating System and Human Development Platform
+
+You are joining an existing software project called **ATLAS**.
+
+Your role is to act as the senior software architect, product engineer, UI/UX designer, and implementation partner.
+
+This document establishes the product vision, philosophy, requirements, design direction, and long-term development strategy of ATLAS.
+
+Read and understand the entire document before making modifications.
+
+---
+
+# PART 1 — WHAT IS ATLAS?
+
+ATLAS is my personal operating system.
+
+It is designed to help me organise, understand, manage, and improve different aspects of my everyday life.
+
+However, I want to evolve it considerably beyond a conventional productivity application.
+
+Most productivity applications focus on:
+- Tasks
+- Calendars
+- Habits
+- Reminders
+- Notes
+- Time management
+- Daily productivity
+
+These are useful, but they only represent a small fraction of human life.
+
+I want ATLAS to eventually become a comprehensive personal intelligence system that understands the person using it.
+
+It should help answer questions such as:
+
+- Who am I today?
+- Who do I want to become?
+- What characteristics define the person I want to be?
+- How healthy am I?
+- How intelligent and knowledgeable am I becoming?
+- Am I developing meaningful relationships?
+- Am I building financial independence?
+- Am I progressing professionally?
+- Am I experiencing life or simply completing tasks?
+- Which areas of my life am I neglecting?
+- What should I improve next?
+- How have I evolved over the last year, five years, or decade?
+
+The fundamental philosophy:
+
+**ATLAS should track the evolution of a human being, not merely the completion of tasks.**
+
+I want to build something that combines:
+1. A personal operating system.
+2. A human development framework.
+3. A life-tracking and reflection platform.
+4. A long-term personal analytics system.
+5. An intelligent assistant that helps me understand and improve my life.
+
+Think of the character-development mechanics of BitLife, combined with a sophisticated personal operating system, but designed for deliberate real-world development rather than gamification alone.
+
+The user is the character.
+Life is the environment.
+Activities are the actions.
+Attributes represent development.
+Milestones represent achievements.
+Time represents progression.
+
+---
+
+# PART 2 — EXISTING PROJECT CONTEXT
+
+ATLAS already exists as a software project.
+
+It is maintained locally on my Windows PC and connected to GitHub.
+
+The project has previously been developed using technologies including:
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Motion
+- Three.js
+
+IMPORTANT:
+
+Do not assume the current implementation is identical to this description.
+
+First inspect the actual repository, package files, components, architecture, dependencies, existing modules, database configuration, and current implementation.
+
+Treat the existing source code as the authoritative source of truth.
+
+Do not unnecessarily replace existing architecture or introduce a new technology stack.
+
+Preserve working functionality.
+
+Before making changes, understand how the current application works.
+
+---
+
+# PART 3 — UPDATED VISUAL IDENTITY: DOOMSDAY PURPLE
+
+## THE DESIGN DIRECTION
+
+ATLAS previously used a dark black-and-green DOOMSDAY visual identity.
+
+I want to retain the entire existing visual direction but replace its green colour palette with purple.
+
+This is a colour-system transformation, NOT a complete redesign.
+
+The existing DOOMSDAY design language must remain intact.
+
+Preserve:
+- Dark cinematic atmosphere.
+- Near-black backgrounds.
+- Layered dark surfaces.
+- Futuristic visual language.
+- Premium interface aesthetics.
+- Existing layouts and component hierarchy.
+- Typography.
+- Spacing.
+- Component shapes.
+- Existing visual depth.
+- Motion and animation behaviour.
+- Existing navigation structure.
+- Existing Three.js implementation where appropriate.
+
+ONLY TRANSFORM THE COLOUR IDENTITY.
+
+## NEW COLOUR PALETTE
+
+Use this as the initial proposed palette:
+
+Canvas:
+#08070D
+
+Surface levels:
+#100E18
+#171321
+#201A2B
+
+Primary text:
+#F4F0FA
+
+Secondary text:
+#C0B8CC
+
+Muted text:
+#958BA5
+
+Primary signal purple:
+#A78BFA
+
+Hover purple:
+#C4B5FD
+
+Subtle purple:
+#7C3AED
+
+These are starting design tokens. Inspect the existing design system and adapt them consistently.
+
+## STRICT COLOUR MIGRATION RULES
+
+1. Replace the existing green accent system with purple.
+2. Replace green hover states with appropriate lighter purple variants.
+3. Replace green active navigation indicators with purple.
+4. Replace green focus rings and selection indicators with purple.
+5. Replace green chart accents with purple where they represent the old brand accent.
+6. Replace green borders, highlights and accent glows with purple equivalents.
+7. Update relevant Three.js lighting and visual effects if they use the previous green accent.
+8. Update gradients and shadows where they contain green.
+9. Update icons and other branded accent elements.
+10. Preserve neutral colours, semantic success/error/warning colours, and other colours that are not part of the brand accent system.
+
+IMPORTANT:
+Do not blindly replace every green colour in the codebase.
+
+For example, green may represent success or positive financial performance. Semantic colours should retain their meaning where appropriate.
+
+Use centralised design tokens wherever possible so the colour identity can be changed consistently in the future.
+
+Do not redesign existing screens just because the palette is changing.
+
+The intended result should look like the exact same ATLAS interface, but with a sophisticated purple identity instead of green.
+
+Think:
+
+BLACK + PURPLE + CINEMATIC DEPTH.
+
+Not:
+- Bright purple consumer SaaS.
+- Pastel purple interfaces.
+- Generic neon cyberpunk.
+- Excessive glowing effects.
+- Entirely purple backgrounds.
+
+Purple should function as the signal/accent colour against the dark interface.
+
+---
+
+# PART 4 — THE NEW CORE FEATURE: HUMAN DEVELOPMENT SYSTEM
+
+Introduce a major new system inside ATLAS.
+
+Working name:
+
+LIFE — Human Development System.
+
+This should be a major module, not just another dashboard widget.
+
+It will maintain a structured, evolving representation of the person using ATLAS.
+
+The system should contain 20 fundamental dimensions of human life.
+
+Each dimension should contain multiple attributes.
+
+## THE 20 LIFE DIMENSIONS
+
+### 01. Physical Health
+
+Represents the physical condition of the human body.
+
+Attributes:
+- Strength
+- Muscular development
+- Cardiovascular health
+- Stamina
+- Endurance
+- Mobility
+- Flexibility
+- Body composition
+- Nutrition
+- Hydration
+- Sleep quality
+- Physical recovery
+- Skin health
+- Hair health
+- Dental health
+- General health
+- Longevity-oriented habits
+
+Potential measurements:
+- Weight
+- Height
+- Body composition
+- Workout frequency
+- Strength progression
+- Cardiovascular endurance
+- Daily steps
+- Sleep duration
+- Nutrition consistency
+- Health milestones
+
+### 02. Intelligence & Cognitive Abilities
+
+- Logical reasoning
+- Critical thinking
+- Mathematical ability
+- Scientific understanding
+- Memory
+- Creativity
+- Problem-solving
+- Decision-making
+- Learning ability
+- Analytical thinking
+- General knowledge
+- Intellectual curiosity
+
+### 03. Mental & Emotional Wellbeing
+
+- Emotional regulation
+- Resilience
+- Stress management
+- Self-awareness
+- Confidence
+- Patience
+- Mental clarity
+- Adaptability
+- Emotional independence
+- Ability to handle failure
+- Inner peace
+- Psychological wellbeing
+
+### 04. Happiness & Life Satisfaction
+
+- Daily happiness
+- Overall life satisfaction
+- Contentment
+- Excitement
+- Gratitude
+- Optimism
+- Sense of belonging
+- Enjoyment
+- Fulfilment
+- Sense of freedom
+
+### 05. Family
+
+- Relationship with parents
+- Relationship with siblings
+- Family connection
+- Time spent with family
+- Family financial security
+- Dependability
+- Family responsibilities
+- Future family aspirations
+- Parenting, if applicable
+
+### 06. Romantic Relationships
+
+- Emotional intimacy
+- Trust
+- Loyalty
+- Communication
+- Compatibility
+- Commitment
+- Physical intimacy
+- Mutual respect
+- Relationship satisfaction
+
+### 07. Social Life & Friendships
+
+- Meaningful friendships
+- Social confidence
+- Communication
+- Networking
+- Social intelligence
+- Community involvement
+- Ability to build connections
+- Social support
+- Social experiences
+
+### 08. Career & Professional Development
+
+- Professional competence
+- Technical skills
+- Industry experience
+- Career progression
+- Job satisfaction
+- Leadership
+- Professional reputation
+- Professional network
+- Entrepreneurship
+- Career independence
+- Recognition
+
+### 09. Wealth & Financial Health
+
+- Income
+- Net worth
+- Savings
+- Investments
+- Passive income
+- Cash flow
+- Debt
+- Financial literacy
+- Emergency reserves
+- Financial independence
+- Ability to support others
+- Financial security
+
+### 10. Assets & Possessions
+
+- Real estate
+- Vehicles
+- Cash
+- Investments
+- Electronics
+- Equipment
+- Business ownership
+- Intellectual property
+- Digital assets
+- Collectibles
+- Personal belongings
+
+Distinguish between financial net worth and the inventory of owned possessions. Avoid double-counting assets.
+
+### 11. Knowledge & Education
+
+- Academic qualifications
+- Scientific literacy
+- Financial knowledge
+- Historical knowledge
+- Cultural knowledge
+- Languages
+- Technical expertise
+- Reading
+- Courses completed
+- Continuous learning
+
+### 12. Creativity & Expression
+
+- Artistic ability
+- Writing
+- Music
+- Photography
+- Videography
+- Design
+- Storytelling
+- Innovation
+- Creative output
+- Original thinking
+
+### 13. Experiences & Adventure
+
+- Countries visited
+- Cities explored
+- Cultures experienced
+- Adventure activities
+- New experiences
+- Food exploration
+- Events attended
+- Memories created
+- Experiences outside one's comfort zone
+
+### 14. Discipline & Character
+
+- Consistency
+- Integrity
+- Honesty
+- Responsibility
+- Self-control
+- Courage
+- Reliability
+- Humility
+- Perseverance
+- Accountability
+- Commitment
+
+### 15. Influence & Reputation
+
+- Public reputation
+- Personal brand
+- Audience
+- Communication
+- Persuasion
+- Leadership
+- Credibility
+- Social influence
+- Industry recognition
+
+### 16. Contribution & Impact
+
+- Helping others
+- Mentorship
+- Volunteering
+- Charitable contributions
+- Knowledge sharing
+- Creating employment
+- Scientific contributions
+- Technological contributions
+- Environmental responsibility
+- Legacy
+
+### 17. Philosophy & Purpose
+
+- Personal philosophy
+- Core values
+- Life purpose
+- Moral framework
+- Spirituality, if relevant
+- Sense of meaning
+- Worldview
+- Understanding of existence
+- Long-term vision
+
+### 18. Lifestyle & Environment
+
+- Living conditions
+- Home quality
+- Personal hygiene
+- Organisation
+- Work-life balance
+- Time freedom
+- Daily routine
+- Digital environment
+- Access to nature
+- Personal safety
+
+### 19. Hobbies & Activities
+
+- Sports
+- Fitness
+- Gaming
+- Reading
+- Travelling
+- Music
+- Cooking
+- Outdoor activities
+- Learning for pleasure
+- Social activities
+- Other personal interests
+
+### 20. Future Potential & Opportunities
+
+- Career opportunities
+- Geographic mobility
+- Skills to acquire
+- Entrepreneurial potential
+- Access to resources
+- Adaptability
+- Future plans
+- Unexplored possibilities
+
+Potential should not be confused with an objectively achieved attribute.
+
+---
+
+# PART 5 — PERSONALITY AND CHARACTER TRAITS
+
+Create a separate personality and character framework.
+
+Initial traits:
+
+- Courage
+- Empathy
+- Integrity
+- Curiosity
+- Ambition
+- Compassion
+- Discipline
+- Independence
+- Adaptability
+- Patience
+- Creativity
+- Resilience
+- Open-mindedness
+- Generosity
+- Wisdom
+- Honesty
+- Accountability
+- Reliability
+
+Distinguish between external circumstances, capabilities, accomplishments, and personality.
+
+Do not assume all traits should be maximised.
+
+---
+
+# PART 6 — CURRENT SELF VS IDEAL SELF
+
+This is the most important feature.
+
+Every user should have two conceptual profiles.
+
+## Current Self
+
+A representation of who the person is today.
+
+Includes:
+- Current attributes
+- Current measurements
+- Current financial position
+- Current health measurements
+- Current relationships
+- Current skills
+- Current achievements
+- Current habits
+- Current lifestyle
+- Current personality assessments
+
+## Ideal Self
+
+A representation of who the person wants to become.
+
+Users should define:
+- Desired physical condition
+- Desired financial position
+- Desired career
+- Desired knowledge
+- Desired relationships
+- Desired experiences
+- Desired lifestyle
+- Desired personality traits
+- Desired accomplishments
+- Desired legacy
+
+For each relevant attribute, store:
+1. Current state.
+2. Desired state.
+3. Why the user wants it.
+4. Definition of success.
+5. Supporting activities.
+6. Historical progress.
+7. Relevant milestones.
+
+Example:
+
+PHYSICAL FITNESS
+
+Current:
+70/100
+
+Target:
+90/100
+
+Vision:
+Develop an athletic, strong, healthy body with excellent endurance and mobility.
+
+Supporting activities:
+- Gym
+- Cardio
+- Nutrition
+- Recovery
+- Sleep
+
+Not every attribute needs a numerical target. Some goals should be narrative or milestone-based.
+
+Ideal Self must remain editable as the user's priorities evolve.
+
+---
+
+# PART 7 — ATTRIBUTE MEASUREMENT ENGINE
+
+Build a configurable attribute system.
+
+Each attribute should have:
+- Unique ID
+- Name
+- Description
+- Parent dimension
+- Measurement type
+- Unit
+- Current value
+- Target value
+- Measurement frequency
+- Historical entries
+- Assessment methodology
+- Source of measurement
+- Supporting activities
+- Related milestones
+- Active/inactive status
+- Custom attribute support
+
+Support:
+
+1. Numeric measurements.
+2. Qualitative ratings.
+3. Boolean states.
+4. Counters.
+5. Frequency measurements.
+6. Milestones.
+7. Narrative attributes.
+
+Allow users to create, rename, edit and deactivate custom attributes without developer intervention.
+
+---
+
+# PART 8 — LIFE PROGRESSION ENGINE
+
+Connect activities to attributes.
+
+Examples:
+
+GYM SESSION:
+- Physical health
+- Strength
+- Endurance
+- Discipline
+- Mental wellbeing
+
+SCIENTIFIC BOOK:
+- Intelligence
+- Knowledge
+- Curiosity
+- Creativity
+
+TIME WITH FRIENDS:
+- Relationships
+- Happiness
+- Social wellbeing
+
+SOFTWARE PROJECT:
+- Technical skills
+- Career
+- Creativity
+- Intelligence
+- Professional experience
+
+IMPORTANT:
+
+Completing an activity does not automatically mean an attribute improved by a specific number of points.
+
+Activities are evidence of behaviour, not guaranteed outcomes.
+
+Use historical measurements and assessments to establish actual development.
+
+Support configurable many-to-many relationships between activities and attributes.
+
+---
+
+# PART 9 — LIFE DASHBOARD
+
+Create a central dashboard containing:
+
+### Personal Profile
+- Name
+- Age
+- Occupation
+- Education
+- Personal description
+- Current life phase
+
+### Life Overview
+- All 20 dimensions
+- Current measurements
+- Target measurements
+- Progress indicators
+- Areas needing attention
+
+### Current Self vs Ideal Self
+- Current profile
+- Ideal profile
+- Development gaps
+- Progress history
+
+### Life Statistics
+- Net worth
+- Income
+- Physical statistics
+- Learning statistics
+- Career milestones
+- Travel statistics
+
+### Development Insights
+- Strongest dimensions
+- Neglected dimensions
+- Recent improvements
+- Stagnant areas
+- Significant achievements
+- Suggested priorities
+
+Do not reduce a person's entire life to one score.
+
+Use a multidimensional profile.
+
+---
+
+# PART 10 — MILESTONES AND ACHIEVEMENTS
+
+Introduce a milestone system.
+
+Examples:
+
+PHYSICAL:
+- First 10K run
+- First marathon
+- Achieved a strength target
+
+FINANCIAL:
+- First ₹1 lakh saved
+- First ₹10 lakh net worth
+- First investment portfolio
+- Financial independence
+
+CAREER:
+- First job
+- First promotion
+- First business
+- Major professional achievement
+
+INTELLECTUAL:
+- First 50 books
+- Completed a degree
+- Learned a language
+- Published research
+
+EXPERIENCES:
+- First international trip
+- Visited 10 countries
+- Completed an adventure activity
+
+RELATIONSHIPS:
+- Important family milestones
+- Meaningful personal experiences
+- Shared achievements
+
+Allow custom milestones, dates, descriptions, evidence, reflections, and related attributes.
+
+---
+
+# PART 11 — LIFE HISTORY
+
+Maintain a long-term record of development.
+
+Support:
+- Daily entries where appropriate
+- Weekly summaries
+- Monthly assessments
+- Annual life reviews
+- Multi-year comparisons
+
+Historical measurements must never be overwritten when new measurements are entered.
+
+Enable users to examine how their life has changed over time.
+
+---
+
+# PART 12 — LIFE INTELLIGENCE
+
+In the future, ATLAS should analyse development and identify patterns.
+
+Examples:
+
+"You have exercised consistently for three months, but your endurance measurements have remained unchanged."
+
+"You have made progress professionally but have allocated little time to creative activities."
+
+"Your savings rate has improved over the past six months."
+
+"Your current goals are heavily concentrated in career and financial development."
+
+Capabilities:
+- Pattern identification
+- Stagnation detection
+- Historical comparison
+- Development insights
+- Suggested actions
+- Periodic reflections
+- Goal prioritisation
+
+AI should interpret information. Deterministic calculations should remain in application logic.
+
+Do not invent measurements, imply unsupported causality, or provide medical or psychological diagnoses.
+
+Insights must be traceable to underlying data.
+
+---
+
+# PART 13 — PRODUCT PHILOSOPHY
+
+ATLAS is not a toxic productivity application.
+
+Rest, happiness, relationships, exploration, and doing nothing are valid parts of life.
+
+Principles:
+
+1. Human worth is not determined by metrics.
+2. Not every dimension needs a numerical score.
+3. The user defines their own ideal self.
+4. Goals can evolve.
+5. Progress is not always linear.
+6. Rest and enjoyment are legitimate.
+7. Financial success does not automatically equal life success.
+8. Overall scores must not conceal imbalances.
+9. Personal data should remain private and under user control.
+10. The system should encourage reflection, not anxiety.
+
+---
+
+# PART 14 — TECHNICAL ARCHITECTURE
+
+First inspect the actual repository.
+
+Understand:
+- Existing folder structure
+- Modules
+- Routing
+- State management
+- Database
+- Persistence
+- Component architecture
+- Styling system
+- Design tokens
+- Animations
+- Dependencies
+- Testing setup
+- Git status
+
+Adapt the proposed architecture to the existing project.
+
+Suggested logical structure:
+
+src/
+  modules/
+    life/
+      dashboard/
+      identity/
+      attributes/
+      dimensions/
+      ideal-self/
+      milestones/
+      experiences/
+      life-history/
+
+    health/
+    finance/
+    habits/
+    journal/
+    career/
+
+  core/
+    attribute-engine/
+    progression-engine/
+    activity-mapping/
+    scoring/
+    analytics/
+
+  shared/
+    components/
+    hooks/
+    utilities/
+
+  database/
+    schema/
+    migrations/
+    repositories/
+
+Conceptual entities:
+
+- LifeProfile
+- LifeDimension
+- AttributeDefinition
+- AttributeEntry
+- IdealTarget
+- Activity
+- ActivityContribution
+- Milestone
+- Reflection
+- LifeEvent
+- LifeReview
+
+These are suggestions, not mandatory table names.
+
+Engineering principles:
+- Strong TypeScript typing.
+- Modular architecture.
+- Reusable components.
+- Separation of business logic and UI.
+- Historical data preservation.
+- Validation.
+- Migration safety.
+- Accessibility.
+- Responsive design.
+- Reduced-motion support.
+- Maintainability.
+- No unnecessary dependencies.
+- No duplicate sources of truth.
+
+Preserve the existing local-first architecture if applicable.
+
+---
+
+# PART 15 — IMPLEMENTATION ROADMAP
+
+## PHASE 0 — DISCOVERY AND ARCHITECTURE
+
+Your immediate assignment.
+
+1. Inspect the repository.
+2. Understand the existing application.
+3. Identify existing modules.
+4. Identify reusable components.
+5. Understand persistence.
+6. Identify architectural constraints.
+7. Audit the existing design system.
+8. Audit all green colour references and their purposes.
+9. Propose the purple colour migration.
+10. Design integration with the Life system.
+11. Identify technical risks.
+
+Produce a detailed discovery report.
+
+## PHASE 1 — DESIGN SYSTEM MIGRATION AND LIFE FOUNDATION
+
+After approval:
+
+First, perform the controlled green-to-purple design-token migration.
+
+Then implement:
+- Life navigation.
+- Life dashboard.
+- 20 dimensions.
+- Attribute definitions.
+- Custom attributes.
+- Current Self.
+- Ideal Self.
+- Numeric and qualitative measurements.
+- Historical attribute entries.
+
+## PHASE 2 — PROGRESSION SYSTEM
+
+- Activity-to-attribute mapping.
+- Milestones.
+- Achievements.
+- Progress tracking.
+- Historical charts.
+- Current versus target comparisons.
+
+## PHASE 3 — LIFE INTELLIGENCE
+
+- Development insights.
+- Neglected dimension detection.
+- Stagnation detection.
+- Historical comparisons.
+- Monthly reviews.
+- Suggested actions.
+
+## PHASE 4 — LIFE SIMULATION
+
+Long-term possibilities:
+- Year-over-year character evolution.
+- Long-term scenarios.
+- Life outcome projections.
+- Interactive life timeline.
+- Personal legacy tracking.
+- Advanced AI-assisted life analysis.
+
+---
+
+# PART 16 — HOW YOU SHOULD WORK
+
+Act as an engineering partner.
+
+Rules:
+
+1. Understand before implementing.
+2. Inspect before proposing changes.
+3. Do not rewrite working modules without justification.
+4. Avoid unnecessary complexity.
+5. Explain important architectural decisions.
+6. Work incrementally.
+7. Preserve the updated purple DOOMSDAY visual identity.
+8. Test changes.
+9. Identify potential regressions.
+10. Maintain documentation.
+11. Use Git responsibly.
+12. Never overwrite user work without permission.
+13. Never expose secrets or credentials.
+14. Ask before destructive migrations or major architectural changes.
+
+Prefer maintainable engineering over producing large quantities of code quickly.
+
+Use engineering judgement for trivial decisions.
+
+Ask when decisions materially affect architecture, data models, user experience, or long-term direction.
+
+---
+
+# PART 17 — YOUR FIRST ASSIGNMENT
+
+DO NOT START CODING YET.
+
+Perform a complete architectural discovery of the existing ATLAS project.
+
+Produce a report containing:
+
+### 1. Existing Architecture
+Technology stack, project structure, modules, routing, state management, persistence and dependencies.
+
+### 2. Existing Functionality
+What ATLAS currently does and which features already exist.
+
+### 3. Existing Design System
+Current colours, tokens, components, animations, layouts and styling conventions.
+
+### 4. Purple Migration Audit
+Identify all green references.
+
+Classify them into:
+- Brand accents to convert to purple.
+- Semantic success colours to preserve.
+- Unrelated colours to preserve.
+- Three.js and graphical effects requiring adjustment.
+
+Propose a safe token-based migration.
+
+### 5. Integration Opportunities
+Identify existing functionality that can connect to the Life system.
+
+### 6. Proposed Architecture
+Explain how Life should integrate without duplicating existing modules.
+
+### 7. Data Model
+Propose entities, relationships, history and persistence.
+
+### 8. UI/UX Plan
+Propose the Life dashboard and navigation.
+
+### 9. Implementation Roadmap
+Break Phase 1 into manageable engineering tasks.
+
+### 10. Risks and Recommendations
+Identify architectural, performance, data-integrity and migration risks.
+
+After producing this report, STOP and wait for my approval.
+
+Do not modify source files, install dependencies, run migrations, change configurations, or make commits during discovery.
+
+---
+
+# FINAL PRODUCT VISION
+
+I want ATLAS to become something I can use for decades.
+
+A system that understands my history, represents my present, and helps me deliberately shape my future.
+
+Ten years from now, I want to understand:
+
+- Who I was.
+- What I believed.
+- What I wanted.
+- What I achieved.
+- What I experienced.
+- How I changed.
+- What I learned.
+- Who I loved.
+- What I contributed.
+- What kind of human being I became.
+
+**ATLAS is not about building the perfect human. It is about consciously designing and experiencing a meaningful human life.**
+
+The visual identity is now DOOMSDAY PURPLE: the original dark, cinematic ATLAS aesthetic with purple replacing green as its primary brand accent.
+
+Build towards this vision.
+
+Start with Phase 0: Discovery and Architecture.
+
+Do not code until I approve the discovery report.

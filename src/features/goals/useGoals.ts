@@ -159,9 +159,10 @@ export function useGoals(initialGoals: Goal[] = []) {
     });
   }, [updateMilestones]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     setGoals([]);
-    void replaceGoalsInDB([]).catch((error) => console.error('Failed to reset goals', error));
+    await replaceGoalsInDB([]);
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY);
   }, []);
 
   const completedCount = useMemo(() => goals.filter((goal) => goal.completed).length, [goals]);

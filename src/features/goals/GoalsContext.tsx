@@ -11,7 +11,7 @@ interface GoalsContextValue {
   toggleMilestone: (goalId: string, milestoneId: string) => void;
   removeMilestone: (goalId: string, milestoneId: string) => void;
   moveMilestone: (goalId: string, milestoneId: string, direction: -1 | 1) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
   completedCount: number;
 }
 

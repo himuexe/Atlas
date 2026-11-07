@@ -6,7 +6,7 @@ interface SavingsContextValue {
   entries: SavingsEntry[];
   addEntry: (amount: number, description: string, category: 'income' | 'expense' | 'savings') => void;
   removeEntry: (id: string) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
   balance: number;
 }
 

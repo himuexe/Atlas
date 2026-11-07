@@ -64,18 +64,11 @@ export function useJournal(initialEntries: JournalEntry[] = []) {
     removeJournalEntryFromDB(id).catch((err) => console.error('Failed to remove journal entry from DB', err));
   }, []);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     setEntries([]);
     setQuery('');
-
-    (async () => {
-      try {
-        await initDatabase();
-        await clearJournalEntries();
-      } catch (err) {
-        console.error('Failed to reset DB journal table', err);
-      }
-    })();
+    await initDatabase();
+    await clearJournalEntries();
   }, []);
 
   const filteredEntries = useMemo(

@@ -65,10 +65,10 @@ export function useSavings(initialEntries: SavingsEntry[] = []) {
     });
   }, [syncEntries]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     setEntries([]);
-    void syncEntries([]);
-  }, [syncEntries]);
+    await replaceSavingsEntriesInDB([]);
+  }, []);
 
   const balance = useMemo(() => calculateBalance(entries), [entries]);
 

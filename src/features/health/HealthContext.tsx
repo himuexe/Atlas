@@ -1,13 +1,15 @@
 import { createContext, ReactNode, useContext } from 'react';
-import { HealthSnapshot } from './types';
+import { HealthMetricEntry, HealthSnapshot } from './types';
 import { useHealthSnapshot } from './useHealthSnapshot';
 
 interface HealthContextValue {
   health: HealthSnapshot;
   updateMetric: (metric: keyof HealthSnapshot, value: number | null) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
   filledMetricsCount: number;
   lastUpdated: string;
+  history: HealthMetricEntry[];
+  saveError: string | null;
 }
 
 const HealthContext = createContext<HealthContextValue | null>(null);

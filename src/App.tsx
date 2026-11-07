@@ -9,6 +9,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { StreaksPage } from './pages/StreaksPage';
 import { GoalsPage } from './pages/GoalsPage';
 import { NotesPage } from './pages/NotesPage';
+import { LifePage } from './pages/LifePage';
 import { FocusProvider } from './features/focus/FocusContext';
 import { HealthProvider } from './features/health/HealthContext';
 import { JournalProvider } from './features/journal/JournalContext';
@@ -19,6 +20,7 @@ import { GoalsProvider } from './features/goals/GoalsContext';
 import { NotesProvider } from './features/notes/NotesContext';
 import { GamificationProvider } from './features/gamification/GamificationContext';
 import { VisitStreakProvider } from './features/visits/VisitStreakContext';
+import { LifeProvider } from './features/life/LifeContext';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { pageTransition, pageTransitionVariants } from './components/ui/motionPresets';
 
@@ -34,11 +36,13 @@ function App() {
                   <SavingsProvider>
                     <GoalsProvider>
                       <NotesProvider>
-                        <GamificationProvider>
-                          <AppShell>
-                            <AppRoutes />
-                          </AppShell>
-                        </GamificationProvider>
+                        <LifeProvider>
+                          <GamificationProvider>
+                            <AppShell>
+                              <AppRoutes />
+                            </AppShell>
+                          </GamificationProvider>
+                        </LifeProvider>
                       </NotesProvider>
                     </GoalsProvider>
                   </SavingsProvider>
@@ -77,6 +81,7 @@ function AppRoutes() {
           <Route path="/savings" element={<SavingsPage />} />
           <Route path="/goals" element={<GoalsPage />} />
           <Route path="/notes" element={<NotesPage />} />
+          <Route path="/life" element={<LifePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate replace to={startupPage} />} />
         </Routes>

@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'motion/react';
 
 const navigation = [
   { label: 'Dashboard', path: '/dashboard' },
+  { label: 'Life', path: '/life' },
   { label: "Today's Focus", path: '/focus' },
   { label: 'Health Snapshot', path: '/health' },
   { label: 'Journal', path: '/journal' },

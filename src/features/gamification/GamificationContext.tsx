@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState, useCallback, useRef } from 'react';
 import { CheckIn, XPEvent, PersonalLevel, Milestone } from './types';
 import {
   getCheckInFromDB,
@@ -10,6 +10,9 @@ import {
   getMilestonesFromDB,
   unlockMilestoneInDB,
   initializeMilestonesInDB,
+  clearCheckIns,
+  clearXPEvents,
+  clearMilestones,
 } from '../../lib/persistence/sqlite';
 import { useStreaksContext } from '../streaks/StreakContext';
 import { useFocus } from '../focus/FocusContext';
@@ -24,6 +27,7 @@ interface GamificationContextType {
   currentCheckInStreak: number;
   addCheckIn: (data: Omit<CheckIn, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   removeCheckIn: (date: string) => Promise<void>;
+  reset: () => Promise<void>;
   getTodayCheckIn: () => CheckIn | null;
 }
 
@@ -35,6 +39,7 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const { habits } = useStreaksContext();
   const { items } = useFocus();
+  const initializationWork = useRef<Promise<void>>(Promise.resolve());
 
   // Initialize data on mount
   useEffect(() => {
@@ -54,7 +59,15 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    initData();
+    initializationWork.current = initData();
+  }, []);
+
+  const reset = useCallback(async () => {
+    await initializationWork.current;
+    await Promise.all([clearCheckIns(), clearXPEvents(), clearMilestones()]);
+    setCheckIns([]);
+    setXPEvents([]);
+    setMilestones([]);
   }, []);
 
   // Calculate all streaks
@@ -213,6 +226,7 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
         currentCheckInStreak: streaks.checkInStreak,
         addCheckIn,
         removeCheckIn,
+        reset,
         getTodayCheckIn,
       }}
     >

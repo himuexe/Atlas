@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthSnapshot, HealthMetricKey } from './types';
-import { getHealthSnapshotFromDB, replaceHealthSnapshotInDB } from '../../lib/persistence/sqlite';
+import {
+  clearHealthSnapshot,
+  getHealthSnapshotFromDB,
+  recordHealthMetricInDB,
+} from '../../lib/persistence/sqlite';
+import type { HealthMetricEntry } from './types';
 
 const initialHealthState: HealthSnapshot = {
   weight: null,
@@ -9,18 +14,11 @@ const initialHealthState: HealthSnapshot = {
   workout: null,
 };
 
-function formatTimestamp(date: Date) {
-  return date.toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
 export function useHealthSnapshot() {
   const [health, setHealth] = useState<HealthSnapshot>(initialHealthState);
   const [lastUpdated, setLastUpdated] = useState<string>('No updates yet');
+  const [history, setHistory] = useState<HealthMetricEntry[]>([]);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -31,6 +29,7 @@ export function useHealthSnapshot() {
         if (mounted && persistedSnapshot) {
           setHealth(persistedSnapshot.health);
           setLastUpdated(persistedSnapshot.lastUpdated);
+          setHistory(Object.values(persistedSnapshot.metrics).flat());
         }
       } catch (err) {
         console.error('Failed to load health snapshot from DB', err);
@@ -43,23 +42,32 @@ export function useHealthSnapshot() {
   }, []);
 
   const updateMetric = useCallback((metric: HealthMetricKey, value: number | null) => {
-    const nextUpdatedAt = formatTimestamp(new Date());
-
+    const observedAt = new Date().toISOString();
     setHealth((current) => {
-      const nextHealth = {
-        ...current,
-        [metric]: value,
-      };
-      void replaceHealthSnapshotInDB(nextHealth, nextUpdatedAt);
-      return nextHealth;
+      return { ...current, [metric]: value };
     });
-    setLastUpdated(nextUpdatedAt);
+    setSaveError(null);
+    void recordHealthMetricInDB(metric, value, observedAt)
+      .then(async () => {
+        const persisted = await getHealthSnapshotFromDB();
+        if (persisted) {
+          setHealth(persisted.health);
+          setHistory(Object.values(persisted.metrics).flat());
+          setLastUpdated(persisted.lastUpdated);
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to save health metric', error);
+        setSaveError('The health entry could not be saved. Your previous recorded history is still available.');
+      });
   }, []);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
+    await clearHealthSnapshot();
     setHealth(initialHealthState);
     setLastUpdated('No updates yet');
-    void replaceHealthSnapshotInDB(initialHealthState, 'No updates yet');
+    setHistory([]);
+    setSaveError(null);
   }, []);
 
   const filledMetricsCount = useMemo(
@@ -73,5 +81,7 @@ export function useHealthSnapshot() {
     reset,
     filledMetricsCount,
     lastUpdated,
+    history,
+    saveError,
   };
 }

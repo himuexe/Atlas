@@ -1,6 +1,6 @@
 import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { SectionCard } from '../../components/ui/SectionCard';
-import { exportDatabase, importDatabase, clearCheckIns, clearXPEvents, clearMilestones } from '../../lib/persistence/sqlite';
+import { exportDatabase, importDatabase, clearLifeData, flushDatabaseSave } from '../../lib/persistence/sqlite';
 import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
@@ -33,11 +33,12 @@ export function SettingsFeature() {
   const { entries: savingsEntries, reset: resetSavings } = useSavingsContext();
   const { goals, reset: resetGoals } = useGoalsContext();
   const { notes, reset: resetNotes } = useNotesContext();
-  const { level, currentCheckInStreak, allCheckIns } = useGamificationContext();
+  const { level, currentCheckInStreak, allCheckIns, reset: resetGamification } = useGamificationContext();
   const { reset: resetVisitStreak } = useVisitStreakContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const selectedPageLabel = useMemo(
     () => startupOptions.find((option) => option.value === startupPage)?.label ?? 'Dashboard',
@@ -46,7 +47,7 @@ export function SettingsFeature() {
 
   const filledHealthMetrics = Object.values(health).filter((value) => value !== null).length;
 
-  const resetAllData = () => {
+  const resetAllData = async () => {
     const confirmed = window.confirm(
       'Resetting app data will clear every entry, note, goal, habit, visit history, preference, level, XP, check-in, and saved progress. This cannot be undone.',
     );
@@ -54,22 +55,30 @@ export function SettingsFeature() {
       return;
     }
 
-    resetFocus();
-    resetHealth();
-    resetJournal();
-    resetStreaks();
-    resetSavings();
-    resetGoals();
-    resetNotes();
-    resetSettings();
-    void resetVisitStreak().catch((err) => console.error('Failed to reset visit history', err));
-    
-    // Reset gamification data
-    void Promise.all([clearCheckIns(), clearXPEvents(), clearMilestones()]).catch((err) => 
-      console.error('Failed to reset gamification data', err)
-    );
-    
-    setStatusMessage('All local data has been cleared.');
+    setIsResetting(true);
+    setStatusMessage('Resetting local data...');
+    try {
+      await Promise.all([
+        resetFocus(),
+        resetHealth(),
+        resetJournal(),
+        resetStreaks(),
+        resetSavings(),
+        resetGoals(),
+        resetNotes(),
+        resetSettings(),
+        resetVisitStreak(),
+        resetGamification(),
+        clearLifeData(),
+      ]);
+      await flushDatabaseSave();
+      setStatusMessage('All local data has been cleared.');
+    } catch (error) {
+      console.error('Failed to reset Atlas data', error);
+      setStatusMessage('Could not reset all data. Please try again.');
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   const handleExportData = async () => {
@@ -242,9 +251,10 @@ export function SettingsFeature() {
             <button
               type="button"
               onClick={resetAllData}
-              className="w-full rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black"
+              disabled={isResetting}
+              className="w-full rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Reset all app data
+              {isResetting ? 'Resetting...' : 'Reset all app data'}
             </button>
           </div>
 

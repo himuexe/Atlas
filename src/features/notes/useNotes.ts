@@ -92,10 +92,11 @@ export function useNotes(initialNotes: Note[] = []) {
     });
   }, [syncNotes]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     setNotes([]);
-    void syncNotes([]);
-  }, [syncNotes]);
+    await replaceNotesInDB([]);
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+  }, []);
 
   const latestNote = useMemo(() => notes[0] ?? null, [notes]);
 

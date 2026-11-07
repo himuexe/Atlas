@@ -8,7 +8,7 @@ interface StreakContextValue {
   updateRestDays: (id: string, restDays: number[]) => void;
   removeHabit: (id: string) => void;
   toggleToday: (id: string) => void;
-  reset: () => void;
+  reset: () => Promise<void>;
   totalHabits: number;
   completedToday: number;
   scheduledToday: number;

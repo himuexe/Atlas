@@ -7,7 +7,7 @@ export default {
         surface: 'rgb(var(--rgb-surface) / <alpha-value>)',
         raised: 'rgb(var(--rgb-surface-raised) / <alpha-value>)',
         highlight: 'rgb(var(--rgb-surface-highlight) / <alpha-value>)',
-        forest: 'rgb(var(--rgb-forest) / <alpha-value>)',
+        'accent-subtle': 'rgb(var(--rgb-accent-subtle) / <alpha-value>)',
         signal: 'rgb(var(--rgb-signal) / <alpha-value>)',
         'signal-hover': 'rgb(var(--rgb-signal-hover) / <alpha-value>)',
         white: 'rgb(var(--rgb-text-primary) / <alpha-value>)',

@@ -9,7 +9,11 @@ const metricDefinitions = [
 ];
 
 export function HealthFeature() {
-  const { health, updateMetric, filledMetricsCount, lastUpdated } = useHealth();
+  const { health, updateMetric, filledMetricsCount, lastUpdated, history, saveError } = useHealth();
+  const latestRecorded = new Date(lastUpdated);
+  const lastUpdatedLabel = lastUpdated === 'No updates yet' || lastUpdated.includes('unknown') || Number.isNaN(latestRecorded.getTime())
+    ? lastUpdated
+    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(latestRecorded);
 
   return (
     <div className="health-feature space-y-6">
@@ -30,13 +34,14 @@ export function HealthFeature() {
                 <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">{filledMetricsCount} of 4 metrics recorded</h3>
               </div>
               <p className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-zinc-300">
-                Updated {lastUpdated}
+                Latest entry {lastUpdatedLabel}
               </p>
             </div>
             <p className="mt-4 text-sm leading-6 text-zinc-400">
               A consistent habit of logging these core metrics helps you see small changes before they become big trends.
             </p>
           </section>
+          {saveError ? <p role="alert" className="rounded-2xl border border-rose-300/20 bg-rose-300/[0.05] p-4 text-sm text-rose-200">{saveError}</p> : null}
 
           <div className="grid gap-6 lg:grid-cols-2">
             {metricDefinitions.map((metric) => (
@@ -77,6 +82,30 @@ export function HealthFeature() {
               />
             ))}
           </div>
+          <details className="rounded-2xl border border-white/[0.07] bg-black/20 p-4 sm:p-5">
+            <summary className="cursor-pointer text-sm font-medium text-zinc-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-200/60">
+              Health entry history ({history.length})
+            </summary>
+            {history.length ? (
+              <ol className="mt-4 space-y-3">
+                {[...history].sort((left, right) =>
+                  (right.observedAt ?? '').localeCompare(left.observedAt ?? '') ||
+                  right.enteredAt.localeCompare(left.enteredAt) ||
+                  right.id.localeCompare(left.id),
+                ).map((entry) => (
+                  <li key={entry.id} className="rounded-xl border border-white/[0.06] p-3">
+                    <p className="text-sm text-zinc-200">{entry.metric}: {entry.value === null ? 'Cleared' : entry.value}</p>
+                    <p className="mt-1 text-xs text-zinc-500">
+                      {entry.observedAt
+                        ? `Observed ${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(entry.observedAt))}`
+                        : 'Imported existing value · measurement date unknown'}
+                      {' · '}Entered {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(entry.enteredAt))}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            ) : <p className="mt-3 text-sm text-zinc-500">Health changes you record will appear here. Existing values without a measurement date are labeled as undated baselines.</p>}
+          </details>
         </div>
 
         <aside className="space-y-6">

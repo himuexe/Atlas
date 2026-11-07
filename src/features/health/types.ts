@@ -7,3 +7,12 @@ export interface HealthSnapshot {
 }
 
 export type HealthMetricKey = keyof HealthSnapshot;
+
+export interface HealthMetricEntry {
+  id: string;
+  metric: HealthMetricKey;
+  value: number | null;
+  observedAt: string | null;
+  enteredAt: string;
+  origin: 'user' | 'legacy-baseline';
+}
