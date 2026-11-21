@@ -1,6 +1,6 @@
 import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { SectionCard } from '../../components/ui/SectionCard';
-import { exportDatabase, importDatabase, clearLifeData, flushDatabaseSave } from '../../lib/persistence/sqlite';
+import { exportDatabase, importDatabase, flushDatabaseSave } from '../../lib/persistence/sqlite';
 import { useFocus } from '../focus/FocusContext';
 import { useHealth } from '../health/HealthContext';
 import { useJournalContext } from '../journal/JournalContext';
@@ -69,7 +69,6 @@ export function SettingsFeature() {
         resetSettings(),
         resetVisitStreak(),
         resetGamification(),
-        clearLifeData(),
       ]);
       await flushDatabaseSave();
       setStatusMessage('All local data has been cleared.');

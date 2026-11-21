@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HealthSnapshot, HealthMetricKey } from './types';
 import {
   clearHealthSnapshot,
+  getHealthMetricEntriesFromDB,
   getHealthSnapshotFromDB,
   recordHealthMetricInDB,
 } from '../../lib/persistence/sqlite';
@@ -29,7 +30,7 @@ export function useHealthSnapshot() {
         if (mounted && persistedSnapshot) {
           setHealth(persistedSnapshot.health);
           setLastUpdated(persistedSnapshot.lastUpdated);
-          setHistory(Object.values(persistedSnapshot.metrics).flat());
+          setHistory(await getHealthMetricEntriesFromDB());
         }
       } catch (err) {
         console.error('Failed to load health snapshot from DB', err);
@@ -52,7 +53,7 @@ export function useHealthSnapshot() {
         const persisted = await getHealthSnapshotFromDB();
         if (persisted) {
           setHealth(persisted.health);
-          setHistory(Object.values(persisted.metrics).flat());
+          setHistory(await getHealthMetricEntriesFromDB());
           setLastUpdated(persisted.lastUpdated);
         }
       })
